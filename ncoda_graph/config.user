@@ -1,0 +1,294 @@
+#
+# CONFIGURATION IDENTIFICATION:
+#      $HeadURL$
+#      @(#)$Id$
+#
+# This config.user file is included in makefiles
+# It contains Fortran options and general commands used in the makefiles
+#
+#-------------------------------------------------------------------------
+# 
+#  OS specific compiler and loader options
+#
+# MACROS      DESCRIPTIONS:
+#
+# FC:	         Fortran compiler.
+# FFLAGS_FNOC:   Fortran compilation flags for libsrc/fnoc
+# FFLAGS_GRAPH:  Fortran compilation flags for libsrc/graphics
+#
+# LD:            Loader
+# LDFLAGS_GRAPH: Loader flag for graphics program
+#
+# GKSLIBS:       NCAR graphic GKS libraries
+#
+# MAKE:          make utility (make or gmake) used by the bottom
+#                level Makefile to compile subroutines
+# OS:            os name
+#
+
+# ----------- GNU Fortran f90  -------
+#
+#   load the PrgEnv-gnu module before make
+#
+
+GNU_CC          = gcc
+GNU_FC          = gfortran
+GNU_FFLAGS      = -fPIC -O -fno-second-underscore -fno-range-check -Wno-argument-mismatch
+GNU_CPP         = cpp -P
+GNU_FREE        =
+GNU_FIXED       = -ffixed-form  -ffixed-line-length-132
+GNU_LD          = gfortran
+GNU_CPPFLAGS    = -P -C
+GNU_INTSIZE_4   =
+GNU_REALSIZE_4  =
+GNU_SWAPIO      = -fconvert=big-endian
+
+GNU_GRAPH       = $(GNU_FFLAGS) $(GNU_FIXED) $(GNU_SWAPIO) \
+	          $(GNU_REALSIZE_4) $(GNU_INTSIZE_4)
+GNU_FNOC        = $(GNU_FFLAGS) $(GNU_FIXED) $(GNU_SWAPIO) \
+	          $(GNU_REALSIZE_4) $(GNU_INTSIZE_4)
+GNU_NCARLIB     = $(NCARG_ROOT)/lib
+GNU_XLIB        = /usr/lib64
+GNU_NCAR        = -L$(GNU_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	          -L$(GNU_XLIB) -lX11
+
+gnu:
+	$(MAKE) target \
+	"MAKE=gmake" \
+	"OS=gnu" \
+	"FC               = $(GNU_FC) " \
+	"FREE_FORM        = $(GNU_FREE) " \
+	"FIXED_FORM       = $(GNU_FIXED) " \
+	"FFLAGS_FNOC      = $(GNU_FNOC) " \
+	"FFLAGS_GRAPH     = $(GNU_GRAPH) " \
+	"LD               = $(GNU_LD) " \
+	"LDFLAGS_GRAPH    = $(GNU_FFLAGS) " \
+	"CPP              = $(GNU_CPP) " \
+	"CPPFLAGS         = $(GNU_CPPFLAGS) " \
+	"GKSLIBS          = $(GNU_NCAR) "
+
+# ----------------------- END GNU --------------------------------
+
+
+# ----------------- CRAY with INTEL  ------------------------------
+#
+
+CRAY_INTEL_CC          = cc
+CRAY_INTEL_FC          = ftn
+CRAY_INTEL_FFLAGS      = -O2 -fpp -pc80 -w -WB
+#CRAY_INTEL_FFLAGS      = -g -C -w -traceback -WB
+CRAY_INTEL_CPP         = cpp -P
+CRAY_INTEL_FREE        = -free
+CRAY_INTEL_FIXED       = -fixed
+CRAY_INTEL_LD          = ftn
+CRAY_INTEL_INTSIZE_4   = -i4
+CRAY_INTEL_REALSIZE_4  = -real-size 32
+CRAY_INTEL_CPPFLAGS    = -P -C
+CRAY_INTEL_SWAPIO      = -convert big_endian -assume byterecl
+
+CRAY_INTEL_GRAPH       = $(CRAY_INTEL_FFLAGS) $(CRAY_INTEL_FIXED) \
+	                 $(CRAY_INTEL_SWAPIO) $(CRAY_INTEL_REALSIZE_4) \
+	                 $(CRAY_INTEL_INTSIZE_4)
+CRAY_INTEL_FNOC        = $(CRAY_INTEL_FFLAGS) $(CRAY_INTEL_FIXED) \
+	                 $(CRAY_INTEL_SWAPIO) $(CRAY_INTEL_REALSIZE_4) \
+	                 $(CRAY_INTEL_INTSIZE_4)
+CRAY_INTEL_NCARLIB     = $(NCARG_ROOT)/lib
+CRAY_INTEL_XLIB        = /usr/lib64
+CRAY_INTEL_NCAR        = -L$(CRAY_INTEL_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	                 -L$(CRAY_INTEL_XLIB) -lX11
+
+cray_intel:
+	$(MAKE) target \
+	"MAKE=gmake " \
+	"OS=cray_intel " \
+	"FC               = $(CRAY_INTEL_FC) " \
+	"FREE_FORM        = $(CRAY_INTEL_FREE) " \
+	"FIXED_FORM       = $(CRAY_INTEL_FIXED) " \
+	"FFLAGS_FNOC      = $(CRAY_INTEL_FNOC) " \
+	"FFLAGS_GRAPH     = $(CRAY_INTEL_GRAPH) " \
+	"LD               = $(CRAY_INTEL_LD) " \
+	"LDFLAGS_GRAPH    = $(CRAY_INTEL_FFLAGS) " \
+	"CPP              = $(CRAY_INTEL_CPP) " \
+	"CPPFLAGS         = $(CRAY_INTEL_CPPFLAGS)" \
+	"GKSLIBS          = $(CRAY_INTEL_NCAR) "
+
+# ----------------- END CRAY with INTEL --------------------------------
+
+# ---------------- LINUX PGI (Portland Group) Fortran f90  --------
+
+LX_PGI             = -fast -Mpreprocess
+#LX_PGI            = -g -C -Mpreprocess
+LX_PGI_FC          = pgf90
+LX_PGI_C           = -fast
+LX_PGI_CPP         = /usr/lib/cpp
+LX_PGI_CPPFLAGS    = -P -C
+LX_PGI_FREE        = -Mfreeform
+LX_PGI_FIXED       =
+LX_PGI_INTSIZE_4   = -i4
+LX_PGI_REALSIZE_4  = -r4
+LX_PGI_SWAPIO      = -byteswapio
+
+LX_PGI_GRAPH       = $(LX_PGI) $(LX_PGI_FIXED) $(LX_PGI_SWAPIO) \
+	             $(LX_PGI_REALSIZE_4) $(LX_PGI_INTSIZE_4)
+LX_PGI_FNOC        = $(LX_PGI) $(LX_PGI_FIXED) $(LX_PGI_SWAPIO) \
+	             $(LX_PGI_REALSIZE_4) $(LX_PGI_INTSIZE_4)
+LX_PGI_NCARLIB     = $(NCARG_ROOT)/lib
+LX_PGI_XLIB        = /usr/lib64
+LX_PGI_NCAR        = -L$(LX_PGI_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	             -L$(LX_PGI_XLIB) -lX11
+
+linux_pgi:
+	$(MAKE) target \
+	"MAKE=gmake " \
+	"OS=linux_pgi " \
+	"TYPE           = " \
+	"FC             = $(LX_PGI_FC) " \
+	"FREE_FORM      = $(LX_PGI_FREE) " \
+	"FIXED_FORM     = $(LX_PGI_FIXED) " \
+	"FFLAGS_FNOC    = $(LX_PGI_FNOC) " \
+	"FFLAGS_GRAPH   = $(LX_PGI_GRAPH) " \
+	"LD             = $(LX_PGI_FC) " \
+	"LDFLAGS_GRAPH  = $(LX_PGI) " \
+	"CPP            = $(LX_PGI_CPP) " \
+	"CPPFLAGS       = $(LX_PGI_CPPFLAGS) " \
+	"GKSLIBS        = $(LX_PGI_NCAR) "
+
+# ----------------- END LINUX PGI -------------------------------------------
+
+
+# ---------------- LINUX Intel  -----------------------------
+
+LX_INTEL             = -O2 -fpp
+#LX_INTEL_FC          = ifort -g -C -w
+LX_INTEL_FC          = ifort
+LX_INTEL_C           = -O2 -cpp
+LX_INTEL_FREE        = -free
+LX_INTEL_FIXED       =
+LX_INTEL_LD          = ifort
+LX_INTEL_CPP         = /usr/lib/cpp
+LX_INTEL_CPPFLAGS    = -P -C
+LX_INTEL_INTSIZE_4   = -i4
+LX_INTEL_REALSIZE_4  = -real_size 32
+LX_INTEL_SWAPIO      = -convert big_endian -assume byterecl
+
+LX_INTEL_GRAPH       = $(LX_INTEL) $(LX_INTEL_FIXED) $(LX_INTEL_SWAPIO) \
+	               $(LX_INTEL_REALSIZE_4) $(LX_INTEL_INTSIZE_4)
+LX_INTEL_FNOC        = $(LX_INTEL) $(LX_INTEL_FIXED) $(LX_INTEL_SWAPIO) \
+	               $(LX_INTEL_REALSIZE_4) $(LX_INTEL_INTSIZE_4)
+LX_INTEL_NCARLIB     = $(NCARG_ROOT)/lib
+LX_INTEL_XLIB        = /usr/lib64
+LX_INTEL_NCAR        = -L$(LX_INTEL_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	               -L$(LX_INTEL_XLIB) -lX11
+
+linux_intel:
+	$(MAKE) target \
+	"MAKE=gmake " \
+	"OS=linux_intel " \
+	"TYPE           = " \
+	"FC             = $(LX_INTEL_FC) " \
+	"FREE_FORM      = $(LX_INTEL_FREE) " \
+	"FIXED_FORM     = $(LX_INTEL_FIXED) " \
+	"FFLAGS_FNOC    = $(LX_INTEL_FNOC) " \
+	"FFLAGS_GRAPH   = $(LX_INTEL_GRAPH) " \
+	"LD             = $(LX_INTEL_LD) " \
+	"LDFLAGS_GRAPH  = $(LX_INTEL) " \
+	"CPP            = $(LX_INTEL_CPP) " \
+	"CPPFLAGS       = $(LX_INTEL_CPPFLAGS) " \
+	"GKSLIBS        = $(LX_INTEL_NCAR) "
+
+# ----------------- END LINUX INTEL -----------------------------------------
+
+
+# ---------------- IBM Intel -----------------------------
+
+LX_IBM             = -O2 -fpp
+#LX_IBM             = -g -C -w
+LX_IBM_FC          = ifort
+LX_IBM_C           = -O2 -cpp
+LX_IBM_FREE        = -free
+LX_IBM_FIXED       =
+LX_IBM_LD          = ifort
+LX_IBM_CPP         = /usr/lib/cpp
+LX_IBM_CPPFLAGS    = -P -C
+LX_IBM_INTSIZE_4   = -i4
+LX_IBM_REALSIZE_4  = -real-size 32
+LX_IBM_SWAPIO      = -convert big_endian -assume byterecl
+
+LX_IBM_GRAPH       = $(LX_IBM) $(LX_IBM_FIXED) $(LX_IBM_SWAPIO) \
+	             $(LX_IBM_REALSIZE_4) $(LX_IBM_INTSIZE_4)
+LX_IBM_FNOC        = $(LX_IBM) $(LX_IBM_FIXED) $(LX_IBM_SWAPIO) \
+	             $(LX_IBM_REALSIZE_4) $(LX_IBM_INTSIZE_4)
+LX_IBM_NCARLIB     = $(NCARG_ROOT)/lib
+LX_IBM_CAIRO       = $(CAIRO)/lib
+LX_IBM_XLIB        = /usr/lib64
+LX_IBM_NCAR        = -L$(LX_IBM_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	             -L$(LX_IBM_CAIRO) -lcairo -lfontconfig -lpixman-1 \
+	             -lfreetype -lexpat -lpng -lz -lpthread -lXrender \
+	             -lbz2 -lgfortran \
+	             -L$(LX_IBM_XLIB) -lX11
+
+ibm_intel:
+	$(MAKE) target \
+	"MAKE=gmake " \
+	"OS=ibm_intel " \
+	"TYPE           = " \
+	"FC             = $(LX_IBM_FC) " \
+	"FREE_FORM      = $(LX_IBM_FREE) " \
+	"FIXED_FORM     = $(LX_IBM_FIXED) " \
+	"FFLAGS_FNOC    = $(LX_IBM_FNOC) " \
+	"FFLAGS_GRAPH   = $(LX_IBM_GRAPH) " \
+	"LD             = $(LX_IBM_LD) " \
+	"LDFLAGS_GRAPH  = $(LX_IBM) " \
+	"CPP            = $(LX_IBM_CPP) " \
+	"CPPFLAGS       = $(LX_IBM_CPPFLAGS) " \
+	"GKSLIBS        = $(LX_IBM_NCAR) "
+
+# ----------------- END IBM INTEL --------------------------------------
+
+
+# ---------------- DELL Intel -----------------------------
+
+LX_DELL             = -O2 -fpp
+#LX_DELL             = -g -C -w
+LX_DELL_FC          = ifort
+LX_DELL_C           = -O2 -cpp
+LX_DELL_FREE        = -free
+LX_DELL_FIXED       =
+LX_DELL_LD          = ifort
+LX_DELL_CPP         = /usr/lib/cpp
+LX_DELL_CPPFLAGS    = -P -C
+LX_DELL_INTSIZE_4   = -i4
+LX_DELL_REALSIZE_4  = -real-size 32
+LX_DELL_SWAPIO      = -convert big_endian -assume byterecl
+
+LX_DELL_GRAPH       = $(LX_DELL) $(LX_DELL_FIXED) $(LX_DELL_SWAPIO) \
+	              $(LX_DELL_REALSIZE_4) $(LX_DELL_INTSIZE_4)
+LX_DELL_FNOC        = $(LX_DELL) $(LX_DELL_FIXED) $(LX_DELL_SWAPIO) \
+	              $(LX_DELL_REALSIZE_4) $(LX_DELL_INTSIZE_4)
+LX_DELL_NCARLIB     = $(NCARG_ROOT)/lib
+LX_DELL_CAIRO       = $(CAIRO)/lib
+LX_DELL_XLIB        = /usr/lib64
+LX_DELL_NCAR        = -L$(LX_DELL_NCARLIB) -lncarg -lncarg_gks -lncarg_c \
+	              -L$(LX_DELL_CAIRO) -lcairo -lfontconfig -lpixman-1 \
+	              -lfreetype -lexpat -lpng -lz -lpthread -lXrender \
+	              -lbz2 -lgfortran \
+	              -L$(LX_DELL_XLIB) -lX11
+
+dell_intel:
+	$(MAKE) target \
+	"MAKE=gmake " \
+	"OS=dell_intel " \
+	"TYPE           = " \
+	"FC             = $(LX_DELL_FC) " \
+	"FREE_FORM      = $(LX_DELL_FREE) " \
+	"FIXED_FORM     = $(LX_DELL_FIXED) " \
+	"FFLAGS_FNOC    = $(LX_DELL_FNOC) " \
+	"FFLAGS_GRAPH   = $(LX_DELL_GRAPH) " \
+	"LD             = $(LX_DELL_LD) " \
+	"LDFLAGS_GRAPH  = $(LX_DELL) " \
+	"CPP            = $(LX_DELL_CPP) " \
+	"CPPFLAGS       = $(LX_DELL_CPPFLAGS) " \
+	"GKSLIBS        = $(LX_DELL_NCAR) "
+
+# ----------------- END DELL INTEL --------------------------------------
+

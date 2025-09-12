@@ -1,0 +1,13 @@
+      REAL FUNCTION X02AJE()
+C     MARK 12 RELEASE. NAG COPYRIGHT 1986.
+C
+C     RETURNS  (1/2)*B**(1-P)  IF ROUNDS IS .TRUE.
+C     RETURNS  B**(1-P)  OTHERWISE
+C
+      REAL CONX02
+      DATA CONX02 /5.96046D-8 /
+c     DATA CONX02 /Z'0000000033800001' /
+C     .. Executable Statements ..
+      X02AJE = CONX02
+      RETURN
+      END

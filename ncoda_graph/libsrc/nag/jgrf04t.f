@@ -1,0 +1,71 @@
+      REAL FUNCTION JGRF04(N,A,NRA,WORK)
+C     MARK 8 RELEASE. NAG COPYRIGHT 1979.
+C     MARK 11.5(F77) REVISED. (SEPT 1985.)
+C     MARK 13 REVISED. USE OF MARK 12 X02 FUNCTIONS (APR 1988).
+C     MARK 13A REVISED. IER-625 (APR 1988).
+C     WRITTEN BY S. HAMMARLING, MIDDLESEX POLYTECHNIC (UINVNM)
+C
+C     JGRF04 RETURNS THE EUCLIDEAN NORM OF THE INVERSE OF THE N*N
+C     UPPER TRIANGULAR MATRIX A.
+C
+C     IF THE MATRIX A IS SINGULAR OR IF THE NORM WOULD OVERFLOW
+C     THEN JGRF04 IS RETURNED AS 1.0/SMALL, WHERE SMALL IS THE
+C     SMALL REAL POSITIVE NUMBER RETURNED FROM ROUTINE X02AME.
+C
+C     NRA MUST BE THE ACTUAL ROW DIMENSION OF A AS DECLARED IN THE
+C     CALLING PROGRAM AND MUST BE AT LEAST N.
+C
+C     WORK IS A WORK ARRAY WHOSE LENGTH MUST BE AT LEAST N.
+C
+C     ONLY THE UPPER TRIANGULAR PART OF A IS REFERENCED.
+C
+C     .. Scalar Arguments ..
+      INTEGER              N, NRA
+C     .. Array Arguments ..
+      REAL                 A(NRA,N), WORK(N)
+C     .. Local Scalars ..
+      REAL                 BIG, SCALE, SMALL, SUMSQ, TINY
+      INTEGER              I, IFAIL, II, IM1, J
+      LOGICAL              UNDFLW
+C     .. External Functions ..
+      REAL                 JGUF04, X02AME
+      LOGICAL              X02DAE
+      EXTERNAL             JGUF04, X02AME, X02DAE
+C     .. External Subroutines ..
+      EXTERNAL             JGTF04, JGYF04
+C     .. Intrinsic Functions ..
+      INTRINSIC            SQRT
+C     .. Executable Statements ..
+      SMALL = X02AME()
+      TINY = SQRT(SMALL)
+      BIG = 1.0/SMALL
+      UNDFLW = X02DAE(0.0)
+C
+      SCALE = 0.0
+      SUMSQ = 1.0
+C
+      IFAIL = 1
+      I = N
+      DO 60 II = 1, N
+         WORK(I) = 1.0
+         IF (I.EQ.1) GO TO 40
+         IM1 = I - 1
+         DO 20 J = 1, IM1
+            WORK(J) = 0.0
+   20    CONTINUE
+C
+   40    CALL JGYF04(I,A,NRA,WORK,WORK,IFAIL)
+C
+         IF (IFAIL.NE.0) GO TO 80
+C
+         CALL JGTF04(I,WORK,SCALE,SUMSQ,TINY,UNDFLW)
+C
+         I = I - 1
+   60 CONTINUE
+C
+      JGRF04 = JGUF04(SCALE,SUMSQ,BIG)
+      RETURN
+C
+   80 JGRF04 = BIG
+      RETURN
+      END

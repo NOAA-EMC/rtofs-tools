@@ -1,0 +1,15 @@
+From Hae-Cheol Kim
+
+program: conv_gfs2datm_long_beta5_hCk.f
+Scripts used, all in /scratch4/NCEPDEV/marine/Zulema/Garraffo/FV3_RT/forcing
+0) compile conv_gfs2datm_long_beta5_hCk.f 
+ln -sf /apps/netcdf/4.7.0/intel/18.0.5.274/include/netcdf.inc .
+ifort -132 conv_gfs2datm_long_beta5_hCk.f -o conv_gfs2datm_long_beta5_hCk -mcmodel=medium -L/apps/netcdf/4.7.0/intel/18.0.5.274/lib/ -lnetcdff -lnetcdf
+
+1) get_gfs_v16.3_gdas_ZG.csh # change sdate, edate (start and end dates)
+2) conv_gfs2datm.fort_beta5.csh # change symd eymd, (start and end dates)
+3) GFS_merge_files.csh  # change Y (year) 
+4) negative2zero_netcdf.csh to eliminate negative precipitation occasionally
+
+A note on what this procedure is doing is here (in progress)
+https://docs.google.com/document/d/1ZC7FE3OmdW264KRZnzKbClEZBqgK4buTLRMG01Lg9go/edit?usp=sharing

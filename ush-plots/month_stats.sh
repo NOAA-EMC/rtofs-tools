@@ -7,15 +7,16 @@ set -e
 set -x
 
 # 1. Validation: Ensure both arguments are provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 yyyymmdd00 ndays"
-    echo "Example: $0 2026031000 10"
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 yyyymmdd00 ndays expt"
+    echo "Example: $0 2026031000 10 v2.5"
     exit 1
 fi
 
 # 2. Assign Arguments
 dtgend=$1
 ndays=$2
+expt=$3
 
 # 3. Environment & Paths
 export bin_dir="/scratch4/NCEPDEV/marine/$USER/bin"
@@ -33,7 +34,6 @@ dtgstart=$($bin_dir/rtofs_dtg "$dtgend" -d -"$ndm1")
 # 5. Run Diagnostic (Heredoc)
 # We use - before the delimiter to allow indentation (optional)
 sh diagn.sh $dtgstart $ndays
-exit 99
 
 # 6. Run Graphing
 sh graph.sh "$RD_short"

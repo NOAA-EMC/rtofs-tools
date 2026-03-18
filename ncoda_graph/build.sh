@@ -5,6 +5,9 @@ machine_name=$(hostname)
 echo ${machine_name}
 mod_path="/home/Santha.Akella/modulefiles/"
 
+# Capture the current physical directory
+current_dir=$(pwd -P)
+
 # Check if the machine name starts with "ufe"
 if [[ $machine_name == ufe* ]]; then
     echo ">>> Detected Machine: $machine_name"
@@ -36,6 +39,10 @@ fi
 # -- Your build/execution commands go here --
 
 if [[ $machine_name == ufe* ]]; then
-  cd /scratch4/NCEPDEV/marine/Santha.Akella/rtofs.prod.v2.5/rtofs-tools/ncoda_graph/
-  make ibm_intel 
+# Use the captured current directory instead of the hardcoded path
+    echo ">>> Changing directory to: $current_dir"
+    cd "$current_dir"
+    
+    echo ">>> Starting build: make ibm_intel"
+    make ibm_intel
 fi

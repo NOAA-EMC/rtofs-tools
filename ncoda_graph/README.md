@@ -5,7 +5,7 @@
 mkdir -p ../../../bin
 cp /scratch4/NCEPDEV/marine/Santha.Akella/bin/* ../../../bin/
 ```
-3. To generate plots: `cd ush-plots; ./month_stats.sh 2026031000 10 |& tee test.log`
+3. To generate plots: `cd ush-plots; ./month_stats.sh 2026031000 10 v2.5 |& tee test.log`
 
 # Details of above step 2 follow:
 - gs: cp /scratch4/NCEPDEV/marine/Zulema.Garraffo/bin/gs

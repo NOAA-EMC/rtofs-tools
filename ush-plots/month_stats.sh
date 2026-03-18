@@ -21,6 +21,10 @@ expt=$3
 # 3. Environment & Paths
 export bin_dir="/scratch4/NCEPDEV/marine/$USER/bin"
 
+home_dir="/scratch4/NCEPDEV/marine/$USER"
+run="rtofs.prod.${expt}"
+expt_dir="$home_dir/$run"
+
 # 4. Calculate Date Variables
 # RD: Target date (typically end date minus 1 day)
 RD=$($bin_dir/rtofs_dtg "$dtgend" -d 1)

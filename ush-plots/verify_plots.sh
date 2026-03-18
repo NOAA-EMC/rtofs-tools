@@ -9,12 +9,25 @@ EXPECTED_FILES=(
     "ArgoSaln_GLBL.png"
     "ArgoTemp_GLBL_fcst.png"
     "ArgoSaln_GLBL_fcst.png"
+    "Argosalverif.png"
+    "Argosalverif_vert.png"
+    "Argotempverif.png"
+    "Argotempverif_vert.png"
     "map_ArgoTemp.png"
     "bias_SST.png"
     "bias_SSS.png"
     "bias_NHicecov.png"
     "bias_SHicecov.png"
+    "SSTverif.png"
+    "43tempfcsterr.png"
+    "salnfcsterr.png"
+    "sstfcsterr.png"
+    "sssfcsterr.png"
 )
+# these are produced as well, but no need to check!
+#"glidersalverif_vert.png"
+#"glidertempverif_vert.png"
+
 
 echo "------------------------------------------------"
 echo ">>> Verifying results in: $TARGET_DIR"

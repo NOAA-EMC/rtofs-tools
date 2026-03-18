@@ -51,11 +51,12 @@ cat << EOF > omapnl
   do_stats      = .true.,
   do_stats_fcst = .true.,
   do_stats_lvl  = .true.,
-  dtg1          = $ddtg,
   n_plot        = 6,
   z_plot        = 1, 10, 13, 18, 32, 36,
  &end
 EOF
+# Add above after `do_stats_lvl` - if you want to compare 2 experiments
+#  dtg1          = $ddtg,
 
 # --- Run NCODA Mapping (The core binary) ---
 $exec_dir/rtofs_ncoda_map "$ddtg" > gout

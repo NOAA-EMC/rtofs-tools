@@ -8,15 +8,9 @@ if [[ $# -lt 2 ]]; then
     exit 1
 fi
 
-# Load modules first to ensure 'ndate' and 'htar' are available
-# source ./machine_modules.sh
-
 curr_date="$1"
 end_date="$2"
 worker_script="./fetch_rtofs_hpss_full.sh"
-
-# Ensure worker is executable
-chmod +x "${worker_script}"
 
 echo "===================================================="
 echo "BEGIN AUTOMATED FETCH: ${curr_date} TO ${end_date}"
@@ -34,7 +28,7 @@ while [[ "${curr_date}" -le "${end_date}" ]]; do
     fi
 
     # Increment date by 24 hours
-    curr_date=$(ndate 24 "${curr_date}")
+    curr_date=$(date -d "${curr_date} + 1 day" +%Y%m%d)
     
 done
 

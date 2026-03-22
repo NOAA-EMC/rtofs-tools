@@ -36,6 +36,24 @@ echo ">>> Extracting ENTIRE archive (400+ files) from HPSS..."
 # Leaving off a trailing file/folder argument tells HTAR to extract EVERYTHING.
 htar -T 4 -xvf "${hpss_tar}" 2>&1 | tee "${log_file}"
 
+# --- 4. Validation ---
+# Check the end of the log for the HTAR SUCCESSFUL string
+if tail -n 5 "${log_file}" | grep -q "HTAR SUCCESSFUL"; then
+    echo "------------------------------------------------"
+    echo ">>> SUCCESS: ${rtofs_date} verified."
+    du -sh "${target_dir}"
+    echo "------------------------------------------------"
+    exit 0
+else
+    echo "################################################"
+    echo ">>> FATAL ERROR: ${rtofs_date} HTAR FAILED"
+    echo ">>> Check log: ${target_dir}/${log_file}"
+    echo "################################################"
+    # Clean up partial directory to save scratch space if desired:
+    # rm -rf "${target_dir}" 
+    exit 2
+fi
+
 # Check exit status
 if [ $? -eq 0 ]; then
     echo "------------------------------------------------"
@@ -47,5 +65,5 @@ else
     echo "------------------------------------------------"
     echo ">>> ERROR: HTAR failed. Check ${target_dir}/${log_file}"
     echo "------------------------------------------------"
-    exit 1
+    exit 3
 fi

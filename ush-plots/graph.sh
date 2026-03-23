@@ -30,9 +30,6 @@ fi
 log_dir="$expt_dir/graph/glbl_out"
 log_dir2="$expt_dir/ncoda/logs/hycom_var"
 
-export OCN_OUTPUT_DIR="/scratch4/NCEPDEV/marine/Zulema.Garraffo/rtofs_da/ncoda_new/restart"
-export OCN_CLIM_DIR="/scratch4/NCEPDEV/marine/Zulema.Garraffo/ncoda/fix/codaclim"
-
 # Calculate analysis date (24h before RD) using the correct bin
 ddtg=$($bin_dir/rtofs_dtg "${RD}00" -d -1)
 

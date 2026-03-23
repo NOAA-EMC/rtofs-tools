@@ -25,6 +25,36 @@ home_dir="/scratch4/NCEPDEV/marine/$USER"
 run="rtofs.prod.${expt}"
 expt_dir="$home_dir/$run"
 
+OCN_OUT_base_dir="/scratch5/NCEPDEV/rstprod/Santha.Akella/data/rtofs/v2p5/ncoda"
+export OCN_OUTPUT_DIR="${OCN_OUT_base_dir}/dates_combined"
+export OCN_CLIM_DIR="${OCN_OUT_base_dir}/codaclim"
+
+# --- INTEGRITY CHECK ---
+echo "------------------------------------------------"
+echo ">>> Validating Ocean Directories..."
+
+for dir in "$OCN_OUTPUT_DIR" "$OCN_CLIM_DIR"; do
+    # Check existence
+    if [ ! -d "$dir" ]; then
+        echo "FATAL ERROR: Directory NOT FOUND: $dir"
+        exit 1
+    fi
+
+    # Get file count for informative logging
+    # ls -1 lists one file per line; wc -l counts them
+    num_files=$(ls -1 "$dir" | wc -l)
+
+    if [ "$num_files" -eq 0 ]; then
+        echo "FATAL ERROR: Directory is EMPTY (0 files): $dir"
+        exit 1
+    else
+        echo "SUCCESS: Found $num_files files in $dir"
+    fi
+done
+
+echo ">>> All directories verified. Proceeding with execution."
+echo "------------------------------------------------"
+
 # 4. Calculate Date Variables
 # RD: Target date (typically end date minus 1 day)
 RD=$($bin_dir/rtofs_dtg "$dtgend" -d 1)

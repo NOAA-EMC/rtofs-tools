@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# count files in directory
+
+# directory input?
+if [ $# -eq 1 ]
+then
+  directory=$1
+else
+  directory=.
+fi
+
+c=0
+echo dirs files links
+for dir in $(ls -1 $directory)
+do
+   db=0;fb=0;lb=0
+   da=$(find $directory/$dir -type d | wc -l)
+   fa=$(find $directory/$dir -type f | wc -l)
+   la=$(find $directory/$dir -type l | wc -l)
+   let db=da+db
+   let fb=fa+fb
+   let lb=la+lb
+   let dc=db+dc
+   let fc=fb+fc
+   let lc=lb+lc
+   let ab=db+fb+lb
+   echo $dir $db $fb $lb $ab
+done
+let ac=dc+fc+lc
+echo TOTAL $dc $fc $lc $ac
+

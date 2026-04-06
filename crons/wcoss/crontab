@@ -1,0 +1,55 @@
+SHELL=/bin/bash -l
+
+# Create a simple text file every hour to check the scrubber
+0 * * * * /u/dan.iredell/checktmp/createtmpfile2.sh >& /lfs/h2/emc/stmp/dan.iredell/chktmp2.log
+
+# save atm.log file every minute
+#* * * * * /lfs/h2/emc/eib/save/dan.iredell/tools/save.last.atm.log.every.minute.sh >& /lfs/h2/emc/stmp/dan.iredell/saveatm.log
+
+# Count neg. dp in log files
+30 02,03,09,16 * * * /u/dan.iredell/monitor/negdp_count.sh >& /lfs/h2/emc/ptmp/dan.iredell/negdp_count.log
+
+# Count neg. dp in log files
+00 * * * * /u/dan.iredell/monitor/negdp_count_new.sh >& /lfs/h2/emc/ptmp/dan.iredell/negdp_count_new.log.00
+#20 * * * * /u/dan.iredell/monitor/negdp_count_new.sh >& /lfs/h2/emc/ptmp/dan.iredell/negdp_count_new.log.20
+#40 * * * * /u/dan.iredell/monitor/negdp_count_new.sh >& /lfs/h2/emc/ptmp/dan.iredell/negdp_count_new.log.40
+
+# Summary of alarm counts
+00 02 * * * /u/dan.iredell/monitor/alarm_summary.v2.3.sh >& /lfs/h2/emc/ptmp/dan.iredell/alarm_summary.v2.3.log
+
+# Archive wcoss2 RTOFS
+00 10 * * * /u/dan.iredell/archiving/archive.RTOFS.wcoss2.oneperone.sh >& /lfs/h2/emc/ptmp/dan.iredell/cron_archive.log
+
+# Archive wcoss2 parallel v2.5 RTOFS (stopped as v2.5 is operational)
+#00 09 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/archive/archive.RTOFS.wcoss2.cron.ncopara.sh >& /lfs/h2/emc/ptmp/dan.iredell/cron_para_archive.log
+
+# Archive Navy restarts on MWF  (Navy no longer pushes these as of 20240825)
+#00 12 * * 1,3,5 /u/dan.iredell/archiving/archive.navy.restarts.sh >& /lfs/h2/emc/ptmp/dan.iredell/cron_navy.log
+
+# Save monthly dcom data
+30 07 15 * * /u/dan.iredell/archiving/archive.monthly.data.sh >& /lfs/h2/emc/ptmp/dan.iredell/cron_monthly.log
+
+# Run new release branch(ish) v2.5.0 in (near) real time (dev machine only)
+30 01 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh release.v2.5.0 >& /lfs/h2/emc/ptmp/dan.iredell/rundailysimd.v2.5.0.cron.log
+#30 01 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh runfalse >& /lfs/h2/emc/ptmp/dan.iredell/runfalse.v2.5.0.cron.log
+#30 01 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh release.v2.5.m >& /lfs/h2/emc/ptmp/dan.iredell/rundailysimd.v2.5.m.cron.log
+# Archive rtofs.v2.5 experiment (dev machine only)
+#00 12 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.archive1.sh release.v2.5.0 >& /lfs/h2/emc/ptmp/dan.iredell/arcdailyv2.5.cron.log
+# Cleanup rtofs.v2.5 experiment COMDIR (dev machine only)
+00 23 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.cleanup.sh release.v2.5.0 >& /lfs/h2/emc/ptmp/dan.iredell/cleanv2.5.cron.log
+
+# run HF tests
+#50 18 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh rtofs.v2.5.3 >& /lfs/h2/emc/ptmp/dan.iredell/run.v2.5.3.log
+#50 18 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh rtofs.v2.5.4 >& /lfs/h2/emc/ptmp/dan.iredell/run.v2.5.4.log
+
+# run QConly every 6 hours
+#00 03,09,15,21 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.qc6hr.sh qc >& /lfs/h2/emc/ptmp/dan.iredell/qc6hour.cron.log
+
+# Run prerelease parallel to v2.5.0
+#30 01 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/run.daily.sim.sh rtofs.TEST >& /lfs/h2/emc/ptmp/dan.iredell/rundailysimd.v2.5.TEST.cron.log
+
+# Run release.v2.5.o2 over April 2025 in fast mode
+#*/15 * * * * /lfs/h2/emc/eib/save/dan.iredell/tools/submitnextjob.sh rtofs.v2.5.bm 20250504 >& /lfs/h2/emc/ptmp/dan.iredell/submitnextjob34.cron.log
+
+# run hwfail run
+#00 01 * * * /lfs/h2/emc/eib/save/dan.iredell/tools/runhwsim.sh >& /lfs/h2/emc/ptmp/dan.iredell/submithwfail.cron.log

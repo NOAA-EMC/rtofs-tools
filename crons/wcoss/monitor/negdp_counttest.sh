@@ -1,0 +1,197 @@
+#!/bin/sh
+
+set -x
+
+# you can modify these:
+
+envir=prod
+distro_prod=Dan.Iredell@noaa.gov,Shastri.Paturi@noaa.gov,Zulema.Garraffo@noaa.gov,Avichal.Mehra@noaa.gov
+distro_dev=Dan.Iredell@noaa.gov
+
+###########################################################################
+
+## Check if running on prod
+h=$( hostname | cut -c1-1 )
+case "$h" in
+  s) host=surge ;;
+  l) host=luna  ;;
+  m) host=mars  ;;
+  v) host=venus ;;
+  c) host=cactus ;;
+  d) host=dogwood ;;
+  a) host=acorn ;;
+  *) host=nobody
+esac
+
+#wcoss1
+#hprod=$( cat /etc/prod )
+#hdev=$( cat /etc/dev )
+
+#wcoss2
+hprod=$(grep primary /lfs/h1/ops/prod/config/prodmachinefile | cut -d: -f2)
+hdev=$(grep backup /lfs/h1/ops/prod/config/prodmachinefile | cut -d: -f2)
+
+if [[ $host == $hprod ]]; then
+  echo "$host is the prod machine - I will send an email to "
+  echo $distro_prod
+  distro=$distro_prod
+  subject="RTOFS neg. dp count for WCOSS2 "
+elif [[ $host == $hdev ]]; then
+  echo "$host is the dev machine - I will send an email to "
+  echo $distro_dev
+  distro=$distro_dev
+  subject="dev RTOFS neg. dp count for WCOSS2 "
+else
+  echo "Unknown machine - I will exit"
+  exit
+fi
+
+#wcoss2
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel
+
+pdy=$($NDATE | cut -c1-8)
+hh=$($NDATE | cut -c9-10)
+if [ $# -eq 1 ]
+then
+  pdy=$1
+  hh=24
+fi
+
+tmpdir=/lfs/h2/emc/ptmp/$LOGNAME
+mkdir -p $tmpdir
+
+odir=/lfs/h1/ops/prod/output/$pdy
+
+#check if run before today
+prestat=99
+preftot=99
+prentot=-1
+if [ -s $tmpdir/negdp_status.$pdy ]
+then
+  prestat=$(cat $tmpdir/negdp_status.$pdy | cut -d" " -f1)
+  preftot=$(cat $tmpdir/negdp_status.$pdy | cut -d" " -f2)
+  prentot=$(cat $tmpdir/negdp_status.$pdy | cut -d" " -f3)
+fi
+
+#check if more than one output file for any of the checked jobs
+morethanone=0
+inc=$(ls -1 $odir/rtofs_global_incup.o* | wc -l)
+anc=$(ls -1 $odir/rtofs_global_analysis.o* | wc -l)
+f1c=$(ls -1 $odir/rtofs_global_forecast_step1.o* | wc -l)
+f2c=$(ls -1 $odir/rtofs_global_forecast_step2.o* | wc -l)
+
+if [[ $inc -gt 1 || $anc -gt 1 || $f1c -gt 1 || $f2c -gt 1 ]]
+then
+   morethanone=1
+fi
+
+files=
+ftot=0
+for f in $odir/rtofs_global_incup.o* $odir/rtofs_global_analysis.o* $odir/rtofs_global_forecast_step?.o*
+do
+  if [ -s $f ]
+  then
+     files="$files $f"
+     let ftot=ftot+1
+  fi
+done
+
+#create list files to search
+#case $hh in
+#   02)
+#       files=$odir/rtofs_global_incup.o*
+#       ftot=1
+#       ;;
+#   0[345678])
+#       files="$odir/rtofs_global_incup.o* $odir/rtofs_global_analysis.o*"
+#       ftot=2
+#       ;;
+#   09|1[012345])
+#       files="$odir/rtofs_global_incup.o* $odir/rtofs_global_analysis.o* $odir/rtofs_global_forecast_step1.o*"
+#       ftot=3
+#       ;;
+#   *)
+#       files="$odir/rtofs_global_incup.o* $odir/rtofs_global_analysis.o* $odir/rtofs_global_forecast_step?.o*"
+#       ftot=4
+#       ;;
+#esac
+
+#count of neg dp
+echo "Below is the number of occurences of the string 'neg. dp' for $pdy." > $tmpdir/negdp_count.$pdy$hh
+echo "If any over zero, then the RTOFS needs investigation " >> $tmpdir/negdp_count.$pdy$hh
+echo " " >> $tmpdir/negdp_count.$pdy$hh
+grep -Hc "neg. dp" $files >> $tmpdir/negdp_count.$pdy$hh
+
+#for each file
+ntot=0
+for f in $files
+do
+   n=$(grep -c "neg. dp" $f)
+   let ntot=ntot+n
+   if [ $n -ne 0 ]
+   then
+      echo " " >> $tmpdir/negdp_count.$pdy$hh
+      echo $f >> $tmpdir/negdp_count.$pdy$hh
+      grep "neg. dp" $f 
+      grep "neg. dp" $f >> $tmpdir/negdp_count.$pdy$hh
+      echo " " >> $tmpdir/negdp_count.$pdy$hh
+   fi
+done
+
+# send email if required - found errors or jobs done and not sent before
+sendit=0
+endofjob=0
+
+# if we have errors
+if [[ $prestat -ne 1 && $preftot -ne $ftot ]]
+then
+sendit=1
+fi
+if [[ $prestat -ne 1 && $preftot -eq 4 ]]
+then
+sendit=1
+fi
+if [ $preftot -eq 4 ]
+then
+endofjob=1
+fi
+
+if [[ $sendit -eq 1 ]]
+then
+echo "1 $ftot $ntot" > $tmpdir/negdp_status.$pdy
+# mail header
+cat << eof1 > $tmpdir/mailheader.txt
+MIME-Version: 1.0
+Content-Type: text/html
+Content-Disposition: inline
+<html>
+<body>
+<pre style="font: monospace">
+eof1
+
+# mail footer
+cat << eof2 > $tmpdir/mailfooter.txt
+</pre>
+</body>
+</html>
+eof2
+
+#and mail it
+#(
+#        echo "To: $distro";
+#        echo "From: wcoss2.monitor@noaa.gov";
+#        echo "Subject: $subject rtofs.$pdy:  $ntot"
+#        cat $tmpdir/mailheader.txt $tmpdir/negdp_count.$pdy$hh $tmpdir/mailfooter.txt
+#) | /usr/sbin/sendmail -t
+
+rc=$?
+echo
+echo sendmail return code $rc
+echo
+
+else
+echo "$endofjob $ftot $ntot" > $tmpdir/negdp_status.$pdy
+fi

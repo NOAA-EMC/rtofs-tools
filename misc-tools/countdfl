@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# count files in directory
+
+# directory input?
+if [ $# -eq 1 ]
+then
+  directory=$1
+else
+  directory=.
+fi
+
+ac=0
+for dir in $(ls -1 $directory)
+do
+   ab=0
+   aa=$(find $directory/$dir -type d,f,l | wc -l)
+   let ab=aa+ab
+   let ac=ab+ac
+   echo $dir $ab
+done
+echo TOTAL $ac
+

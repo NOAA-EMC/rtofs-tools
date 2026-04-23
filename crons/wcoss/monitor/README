@@ -1,0 +1,17 @@
+-rwxr-xr-x 1 dan.iredell eib 2884 Mar 30 22:05 alarm_summary.sh
+-rwxr-xr-x 1 dan.iredell eib 2789 Mar 30 22:05 alarm_summary.v2.3.sh
+-rwxr-xr-x 1 dan.iredell eib 5225 Mar 30 22:05 negdp_count_new.sh
+-rwxr-xr-x 1 dan.iredell eib 4442 Mar 30 22:05 negdp_count.sh
+-rwxr-xr-x 1 dan.iredell eib 4451 Mar 30 22:05 negdp_counttest.sh
+-rw-r--r-- 1 dan.iredell eib   39 Mar 30 22:05 pretendprodmachinefile
+-rw-r--r-- 1 dan.iredell eib   38 Mar 30 22:05 prodmachinefile
+-rwxr-xr-x 1 dan.iredell eib 4133 Mar 30 22:05 testit.sh
+
+Active crons
+negdp_count.sh
+- scans /lfs/h1/ops/prod/output/<yyyymmdd>/rtofs* output logs for string "neg. dp"
+
+alarm_summary.v2.3.sh
+- emails snippets of the alarm counts to recieptinents
+
+All other scripts/files are either inactive or informational

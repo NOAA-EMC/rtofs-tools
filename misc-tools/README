@@ -1,0 +1,14 @@
+-rwxr-xr-x 1 dan.iredell eib  285 Apr  6 21:31 countdfl
+-rwxr-xr-x 1 dan.iredell eib  527 Apr  6 21:31 countfiles
+-rwxr-xr-x 1 dan.iredell eib 1175 Apr  6 21:31 runtime.py
+
+countdfl
+- counts the number of snodes (directories, files, links) in a specifed directory.
+- good for checking if a job ran ok
+
+coundfiles
+- same as countdfl except it has separate counts for the directories files and links.
+
+runtime.py
+- parses a logfile (e.g. file in /lfs/h1/ops/prod/output/<yyyymmdd>)
+- prints the start, end, and run time for the job

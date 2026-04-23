@@ -727,7 +727,7 @@ then
             if [ $hstattot -ne 0 ]
             then
               build_archive_ncoda_hycom_var $dat
-              build_archive_ncoda_therest $dat
+#              build_archive_ncoda_therest $dat
             fi
           fi
         fi
@@ -735,6 +735,6 @@ then
     done
   else
     build_archive_ncoda_hycom_var $pdy
-    build_archive_ncoda_therest $pdy
+#    build_archive_ncoda_therest $pdy
   fi
 fi

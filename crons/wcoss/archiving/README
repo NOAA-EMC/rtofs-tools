@@ -1,0 +1,21 @@
+-rwxr-xr-x 1 dan.iredell eib   949 Mar 30 22:05 save_restart_cice.sh
+-rwxr-xr-x 1 dan.iredell eib  1709 Mar 30 22:05 savedump.sh
+-rw-r--r-- 1 dan.iredell eib   659 Mar 30 22:05 example
+-rwxr-xr-x 1 dan.iredell eib 10758 Mar 30 22:05 archive.RTOFS.wcoss2.sh
+-rwxr-xr-x 1 dan.iredell eib  2208 Mar 30 22:05 archive.navy.restarts.sh
+-rwxr-xr-x 1 dan.iredell eib  1835 Mar 30 22:05 archive.monthly.data.sh
+-rwxr-xr-x 1 dan.iredell eib 15214 Apr 23 14:02 archive.RTOFS.wcoss2.oneperone.sh
+
+Active crons
+archive.RTOFS.wcoss2.oneperone.sh 
+- archives RTOFS v2 data in com that NCO does not archive.
+- location /NCEPDEV/emc-ocean/5year/Dan.Iredell/wcoss2.prod/rtofs.<YYYYMMDD>/
+- modified on 20260423 to not archive at much (NCO archives more now)
+
+archive.monthly.data.sh
+- archives the monthly dcom data in /lfs/h1/ops/prod/dcom/<yyyymm> (NCO does not archive this data)
+- location /NCEPDEV/emc-ocean/5year/Dan.Iredell/dcom/
+- this is backup to Ashley Stanfield's archive
+
+All other scripts/files are either inactive or informational
+

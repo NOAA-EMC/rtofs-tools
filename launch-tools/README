@@ -1,0 +1,30 @@
+All config files are different experiments. Most are old.
+The only two launch scripts active are 
+   ncoda_rtofs_glo.launch.ALL.sh  - for v2.5
+   rtofs_glo.launch.V3.sh         - for v3.0
+All other launch scripts are one-time tests or experimental.
+
+Other files
+[200~-rwxr-xr-x 1 dan.iredell eib  1846 Apr 24  2025 run.daily.sim.archive1.sh
+-rwxr-xr-x 1 dan.iredell eib  1852 Oct 15  2024 run.daily.sim.archive.sh
+-rwxr-xr-x 1 dan.iredell eib  1353 Nov  4 14:17 run.daily.sim.cleanup.sh
+-rwxr-xr-x 1 dan.iredell eib  3186 Mar 29 16:08 run.daily.sim.sh
+-rwxr-xr-x 1 dan.iredell eib  1988 Jul  8  2025 run.qc6hr.sh
+-rwxr-xr-x 1 dan.iredell eib  2628 Apr 23 14:15 submitnextD5job.sh
+-rwxr-xr-x 1 dan.iredell eib  2618 Apr 23 14:15 submitnextjob.old.sh
+-rwxr-xr-x 1 dan.iredell eib  3194 Apr 23 14:15 submitnextjob.sh
+
+run.daily.sim.sh
+- to run parallels (invoked by cron)
+
+run.daily.sim.archive.sh
+- to archive the parallel (invoked by cron)
+
+run.daily.sim.cleanup.sh
+- to clean up COMDIR of the parallel (invoked by cron)
+
+submitnextjob.sh
+- to run the next PDY when running in fast mode (invoked by cron)
+
+run.qc6hr.sh
+- to run the QC job every 6 hours (for HAFS team)

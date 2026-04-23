@@ -11,6 +11,9 @@
 # 20210321 to present (add atmos/wave to directory path (in filename))
 #      tarball: com_gfs_[vers]_gdas.[yyyymmdd]_[cc].gdas_flux.tar
 #      filename: ./gdas.[yyyymmdd]/[cc]/atmos/gdas.t[cc]z.sfluxgrbf[hhh]grib2
+# 2026???? to present (add more directories)
+#      tarball: 
+#      filename: 
 
 
 if [ $# -eq 1 ]

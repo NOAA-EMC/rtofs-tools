@@ -42,7 +42,10 @@ export simulation=${simulation:-sim}
 export sim=${sim:-zz}
 export tmproot=/lfs/h2/emc/ptmp/$LOGNAME/$simulation
 # change tmproot to stmp?
-if [ $configname ==  rtofs.v2.5.rr.config.notnow ]; then
+if [ $configname ==  release.v2.5.0.config ]; then
+  export tmproot=/lfs/h2/emc/stmp/$LOGNAME/$simulation
+fi
+if [ $configname ==  release.v2.5.ops.config ]; then
   export tmproot=/lfs/h2/emc/stmp/$LOGNAME/$simulation
 fi
 queue=${queue:-dev}
@@ -204,14 +207,14 @@ testjustthisjob=0
 analysisanditspost=0
 forecast1anditspost=0
 forecast2anditspost=0
-if [ $configname == release.v2.5.0.test.config ]; then
+if [ $configname == coldstart.v2.5.config ]; then
 testjustthisjob=0
 analysisanditspost=0
 forecast1anditspost=0
 forecast2anditspost=0
 fi
-if [ $configname == bugtest.config ]; then
-testjustthisjob=1
+if [ $configname == release.v2.5.ops.config ]; then
+testjustthisjob=0
 analysisanditspost=0
 forecast1anditspost=0
 forecast2anditspost=0
@@ -948,19 +951,19 @@ fi # forecast2anditspost
 #HERE
 
 #############
-#Submit analysis grib2 post
-export NN=01
-jobname=rtofs_analysis_grib_post.d${NN}
+jobname=rtofs_analysis_pre
 export jobid=$jobname.$pid
 export job=$jobname
-cat << EOF_analysis_grib_post > $batchloc/rtofs.analysis_grib_post.$pid
+#mkdir -p ${myDATAROOT}/$jobid
+
+cat << EOF_analysis_pre > $batchloc/rtofs.analysis_pre.$pid
 #!/bin/bash
 #PBS -N $jobname
 #PBS -j oe
 #PBS -A $account
-#PBS -l place=vscatter,select=1:ncpus=11:mem=16GB
+#PBS -l place=vscatter,select=1:ncpus=1:mem=10GB
 #PBS -q $queue
-#PBS -l walltime=02:00:00
+#PBS -l walltime=00:50:00
 #PBS -l debug=true
 #PBS -V
 
@@ -973,32 +976,129 @@ module load prod_util
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load intel/${intel_ver}
 module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
 module load wgrib2/${wgrib2_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
-module load cdo/${cdo_ver}
 module list
 
 export COMROOT=$myCOMROOT
 export DATAROOT=$myDATAROOT
-export NPROCS=11
+export NPROCS=1
 
-$HOMErtofs/jobs/JRTOFS_GLO_ANALYSIS_GRIB2_POST
+$HOMErtofs/jobs/JRTOFS_GLO_ANALYSIS_PRE
 
-EOF_analysis_grib_post
+EOF_analysis_pre
 
-jobid_analgribpost=$(qsub $batchloc/rtofs.analysis_grib_post.$pid)
+jobid_preanal=$(qsub $batchloc/rtofs.analysis_pre.$pid)
 if [ $# -gt 0 ]
 then
-  echo LAUNCHER: RTOFS-GLO analysis grib post is submitted - jobid $jobid_analgribpost
+  echo LAUNCHER: RTOFS-GLO pre-analysis is submitted - jobid $jobid_preanal
 else
-  echo 'LAUNCHER ERROR: RTOFS-GLO analysis grib post not submitted at host '`hostname`' at '`date` "error is $#"
+  echo 'LAUNCHER ERROR: RTOFS-GLO analysis pre not submitted at host '`hostname`' at '`date` "error is $#"
   exit
 fi
+
+#############
+#Submit pre forecast1
+jobname=rtofs_fcst1_pre
+export jobid=$jobname.$pid 
+export job=$jobname
+#mkdir -p ${myDATAROOT}/$jobid
+  
+cat << EOF_fcst1_pre > $batchloc/rtofs.fcst1_pre.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=1:mem=10GB
+#PBS -q $queue
+#PBS -l walltime=00:50:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module list 
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=1
+
+$HOMErtofs/jobs/JRTOFS_GLO_FORECAST_STEP1_PRE
+
+EOF_fcst1_pre
+
+jobid_prefcst1=$(qsub $batchloc/rtofs.fcst1_pre.$pid)
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO fcst1 pre is submitted - jobid $jobid_prefcst1
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO fcst1 pre not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+
+#############
+#Submit pre forecast2
+jobname=rtofs_fcst2_pre
+export jobid=$jobname.$pid
+export job=$jobname
+#mkdir -p ${myDATAROOT}/$jobid
+
+cat << EOF_fcst2_pre > $batchloc/rtofs.fcst2_pre.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=1:mem=5GB
+#PBS -q $queue
+#PBS -l walltime=00:30:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module list
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=1
+
+$HOMErtofs/jobs/JRTOFS_GLO_FORECAST_STEP2_PRE
+
+EOF_fcst2_pre
+
+jobid_prefcst2=$(qsub $batchloc/rtofs.fcst2_pre.$pid)
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO fcst2 pre is submitted - jobid $jobid_prefcst2
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO fcst2 pre not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+
 
 #THERE
 ################################

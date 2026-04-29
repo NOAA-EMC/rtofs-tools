@@ -23,25 +23,27 @@
 #
 # JOB CONTROL - all these default to 0 if not specified. The run
 # dependencies are automatic (this script will take care of that for you).
-# 
+#
+#* NCODA **
 # runqc 
 # runglblvar
 # runpolarvar
 # run3dvar
+#* INCREMENTAL UPDATE **
 # runncodainc
 # runufsincup
+#* ANALYSIS **
 # runanalpre
 # runufsanal
-# runanalpost
 # runanalgribpost
+#* FORECAST STEP1 **
 # runfcst1pre
 # runufsfcst1
 # runfcst1gribpost
+#* FORECAST STEP2 **
 # runfcst2pre
 # runufsfcst2
 # runfcst2gribpost
-
-
 #
 
 #####
@@ -189,7 +191,7 @@ pid=$$
 cd ${myDATAROOT}
 cd $COMtmp/logs/$today
 
-# which jobs are we running (set in config file)
+# which jobs are we running (see config file for settings)
 export simulation=${simulation:-sim}
 runqc=${runqc:-0}
 runglblvar=${runglblvar:-0}
@@ -197,11 +199,13 @@ runpolarvar=${runpolarvar:-0}
 run3dvar=${run3dvar:-0}
 runncodainc=${runncodainc:-0}
 runufsincup=${runufsincup:-0}
+runanalpre=${runanalpre:-0}
 runufsanal=${runufsanal:-0}
-runanalpost=${runanalpost:-0}
 runanalgribpost=${runanalgribpost:-0}
+runfcst1pre=${runfcst1pre:-0}
 runufsfcst1=${runufsfcst1:-0}
 runfcst1gribpost=${runfcst1gribpost:-0}
+runfcst2pre=${runfcst2pre:-0}
 runufsfcst2=${runufsfcst2:-0}
 runfcst2post=${runfcst2post:-0}
 runspecial=${runspecial:-0}
@@ -216,199 +220,9 @@ echo
 
 if [ $runspecial -eq 1 ]
 then
-jobname=rtofs_combine
-export jobid=$jobname.$pid
-export job=$jobname
-cat << EOF_combine > $batchloc/rtofs.combine.$pid
-#!/bin/bash
-#PBS -N $jobname
-#PBS -j oe
-#PBS -A $account
-#PBS -l place=vscatter:exclhost,select=2:ncpus=128
-#PBS -q $queue
-#PBS -l walltime=01:29:00
-#PBS -l debug=true
-#PBS -V
-
-
-set +x
-module list
-MACHINE_ID=wcoss2
-module reset
-module use ${HOMErtofs}/sorc/ufs_utils.fd/modulefiles
-module load build.wcoss2.intel
-module load cray-pals
-module load prod_util
-module load prod_envir
-module load cfp
-module list
-set -x
-
-export EXECrtofs=/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/exec
-cd /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226
-rm -f cmdfile5.cpout
-
-for d in 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23;do
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_351_\${d}.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_351_\${d}.nc > four.combine.out.\${d}" >> cmdfile5.cpout
-echo "sleep 10" >> cmdfile5.cpout
-echo "sleep 10" >> cmdfile5.cpout
-echo "sleep 10" >> cmdfile5.cpout
-done
-
-chmod +x cmdfile5.cpout
-mpiexec -np 256 --cpu-bind verbose,core cfp ./cmdfile5.cpout > cpout5.out
-date
-
-exit
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_350_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_350_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_351_18.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_351_18.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_352_00.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_352_00.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_352_12.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_352_12.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_352_18.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_352_18.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_353_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_353_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_351_09.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_351_09.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_351_17.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_351_17.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_351_18.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_351_18.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_352_04.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_352_04.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_352_13.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_352_13.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_352_21.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_352_21.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_353_04.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_353_04.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_353_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_353_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_353_21.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_353_21.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_350_18.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_350_18.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_350_12.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_350_12.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_351_00.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_351_00.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_351_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_351_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_352_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_352_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_353_00.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_353_00.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_353_12.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_353_12.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_352_06.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_352_06.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_353_10.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_353_10.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_354_00.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_354_00.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocns_2025_353_00.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocns_2025_353_00.nc" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "sleep 10" >> cmdfile2.cpout
-echo "/lfs/h2/emc/eib/save/dan.iredell/RTOFS_GLO/ush/rtofs_combine_nc.sh /lfs/h2/emc/ptmp/dan.iredell/rb.v3.0/NC-v2.5.2/20251216/rtofs_fcst1_v2.5.2_prod/rtofs_fcst1.2959226 ocnp_2025_351_12.nc /lfs/h2/emc/couple/noscrub/dan.iredell/COMDIR/prod/com/rtofs/v2.5/rtofs.20251216/ocnp_2025_351_12.nc" >> cmdfile2.cpout
-
-chmod +x cmdfile2.cpout
-mpiexec -np 256 --cpu-bind verbose,core cfp ./cmdfile2.cpout > cpout2.out
-date
-
-EOF_combine
-
-jobid_qc=$(qsub $batchloc/rtofs.combine.$pid) 
-if [ $# -gt 0 ]
-then
-  echo LAUNCHER: RTOFS-GLO combine is submitted - jobid $jobid_qc
-else
-  echo 'LAUNCHER ERROR: RTOFS-GLO combine not submitted at host '`hostname`' at '`date` "error is $#"
-  exit
-fi
-
-#there
+echo no special job
 fi # runspecial
+#there
 
 #################################################
 
@@ -434,17 +248,18 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
-module load bufr_dump/${bufr_dump_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load bufr_dump/${bufr_dump_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+#module load ve/rtofs/${ve_rtofs_ver}
 module load ve/hafs/${ve_hafs_ver}
 module list
 
@@ -489,14 +304,14 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cray-mpich/${cray_mpich_ver}
-module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cray-mpich/${cray_mpich_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
 module list
 
 export COMROOT=$myCOMROOT
@@ -545,14 +360,14 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cray-mpich/${cray_mpich_ver}
-module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cray-mpich/${cray_mpich_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
 module list
 
 export COMROOT=$myCOMROOT
@@ -602,17 +417,20 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cray-mpich/${cray_mpich_ver}
-module load cfp/${cfp_ver}
-module load HDf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cray-mpich/${cray_mpich_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load HDf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+module load udunits/${udunits_ver_rtofs}
+module load gsl/${gsl_ver_rtofs}
+module load nco/${nco_ver_rtofs}
 module list
 
 export COMROOT=$myCOMROOT
@@ -661,16 +479,17 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cray-mpich/${cray_mpich_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cray-mpich/${cray_mpich_ver_rtofs}
 module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+#module load ve/rtofs/${ve_rtofs_ver}
 module load ve/hafs/${ve_hafs_ver}
 module list
 
@@ -702,7 +521,6 @@ then
 jobname=rtofs_incup
 export jobid=$jobname.$pid
 export job=$jobname
-mkdir -p ${myDATAROOT}/$jobid
 cat << EOF_ufsincup > $batchloc/rtofs.incup.$pid
 #!/bin/bash
 #PBS -N $jobname
@@ -772,12 +590,68 @@ else
 fi
 fi # runufsincup
 
+#preanalysis
+if [ $runanalpre -eq 1 ]
+then
+jobname=rtofs_analysis_pre
+export jobid=$jobname.$pid
+export job=$jobname
+
+cat << EOF_analpre > $batchloc/rtofs.analpre.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=1:mem=10GB
+#PBS -q $queue
+#PBS -l walltime=00:50:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module list
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=1
+
+$HOMErtofs/jobs/JRTOFS_GLO_ANALYSIS_PRE
+
+EOF_analpre
+
+if [ $runqc -eq 0 ]
+then
+   jobid_preanal=$(qsub $batchloc/rtofs.analpre.$pid)
+else
+   jobid_preanal=$(qsub -W depend=afterok:$jobid_qc $batchloc/rtofs.analpre.$pid)
+fi
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO pre-analysis var is submitted - jobid $jobid_polar
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO pre-analysis not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+fi # runanalpre
+
+# analysis
 if [ $runufsanal -eq 1 ]
 then
 jobname=rtofs_anal
 export jobid=$jobname.$pid
 export job=$jobname
-mkdir -p ${myDATAROOT}/$jobid
 #export numberofprocs=2688
 #export numberofprocs=2944
 export numberofprocs=2560
@@ -838,11 +712,20 @@ $HOMErtofs/jobs/JRTOFS_GLO_ANALYSIS
 
 EOF_ufsanal
 
-if [ $runufsincup -eq 0 ]
+if [[ $runufsincup -eq 0 && $runanalpre -eq 0 ]]
 then
    jobid_anal=$(qsub $batchloc/rtofs.anal.$pid)
 else
-   jobid_anal=$(qsub -W depend=afterok:$jobid_incup $batchloc/rtofs.anal.$pid)
+   dep="-W depend=afterok"
+   if [ $runufsincup -eq 1 ]
+   then
+     dep="$dep:$jobid_incup"
+   fi
+   if [ $runanalpre -eq 1 ]
+   then
+     dep="$dep:$jobid_preanal"
+   fi
+   jobid_anal=$(qsub $dep $batchloc/rtofs.anal.$pid)
 fi
 
 if [ $# -gt 0 ]
@@ -853,66 +736,6 @@ else
   exit
 fi
 fi # runufsanal
-
-# anal post
-if [ $runanalpost -eq 1 ]
-then
-jobname=rtofs_analysis_post
-export jobid=$jobname.$pid
-export job=$jobname
-cat << EOF_analysis_post > $batchloc/rtofs.anal.post.$pid
-#!/bin/bash
-#PBS -N $jobname
-#PBS -j oe
-#PBS -A $account
-#PBS -l place=vscatter,select=1:ncpus=4:mem=120GB
-#PBS -q $queue
-#PBS -l walltime=02:00:00
-#PBS -l debug=true
-#PBS -V 
-
-source ${HOMErtofs_glo}/versions/run.ver
-
-module purge
-module load envvar
-module load prod_envir
-module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
-module load cdo/${cdo_ver}
-module list
-
-export COMROOT=$myCOMROOT
-export DATAROOT=$myDATAROOT
-export NPROCS=4
-
-$HOMErtofs/jobs/JRTOFS_GLO_ANALYSIS_POST
-
-EOF_analysis_post
-
-if [ $runufsanal -eq 0 ]
-then
-   jobid_analpost=$(qsub $batchloc/rtofs.anal.post.$pid)
-else
-   jobid_analpost=$(qsub -W depend=afterok:$jobid_anal $batchloc/rtofs.anal.post.$pid)
-fi
-
-if [ $# -gt 0 ]
-then
-  echo LAUNCHER: RTOFS-GLO analysis post is submitted - jobid $jobid_analpost
-else
-  echo 'LAUNCHER ERROR: RTOFS-GLO analysis post not submitted at host '`hostname`' at '`date` "error is $#"
-  exit
-fi
-fi # runanalpost
 
 #anal grib post
 if [ $runanalgribpost -eq 1 ]
@@ -925,7 +748,7 @@ cat << EOF_analgribpost > $batchloc/rtofs.anal.grib.post.$pid
 #PBS -N $jobname
 #PBS -j oe
 #PBS -A $account
-#PBS -l place=vscatter,select=1:ncpus=11:mem=16GB
+#PBS -l place=vscatter,select=1:ncpus=11:mem=160GB
 #PBS -q $queue
 #PBS -l walltime=02:00:00
 #PBS -l debug=true
@@ -937,17 +760,17 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
-module load cdo/${cdo_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+module load cdo/${cdo_ver_rtofs}
 module list
 
 export COMROOT=$myCOMROOT
@@ -967,12 +790,68 @@ fi
 
 if [ $# -gt 0 ]
 then
-  echo LAUNCHER: RTOFS-GLO analysis grib post is submitted - jobid $jobid_analpost
+  echo LAUNCHER: RTOFS-GLO analysis grib post is submitted - jobid $jobid_analgribpost
 else
   echo 'LAUNCHER ERROR: RTOFS-GLO analysis grib post not submitted at host '`hostname`' at '`date` "error is $#"
   exit
 fi
 fi # runanalgribpost
+
+# runfcst1pre
+if [ $runfcst1pre -eq 1 ]
+then
+jobname=rtofs_fcst1_pre
+export jobid=$jobname.$pid
+export job=$jobname
+
+cat << EOF_fcst1pre > $batchloc/rtofs.fcst1pre.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=1:mem=10GB
+#PBS -q $queue
+#PBS -l walltime=00:50:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module list
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=1
+
+$HOMErtofs/jobs/JRTOFS_GLO_FORECAST_STEP1_PRE
+
+EOF_fcst1pre
+
+if [ $runanalpre -eq 0 ]
+then
+   jobid_prefcst1=$(qsub $batchloc/rtofs.fcst1pre.$pid)
+else
+   jobid_prefcst1=$(qsub -W depend=afterok:$jobid_preanal $batchloc/rtofs.fcst1pre.$pid)
+fi
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO pre-forecast1 var is submitted - jobid $jobid_polar
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO pre-forecast1 not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+fi # runfcst1pre
 
 # runufsfcst1
 if [ $runufsfcst1 -eq 1 ]
@@ -987,7 +866,7 @@ cat << EOF_ufsfcst1 > $batchloc/rtofs.fcst1.$pid
 #PBS -A $account
 #PBS -l place=vscatter:exclhost,select=20:ncpus=128:mpiprocs=128
 #PBS -q $queue
-#PBS -l walltime=10:00:00
+#PBS -l walltime=03:00:00
 #PBS -l debug=true
 #PBS -V
 
@@ -1049,7 +928,7 @@ else
 fi
 fi # runufsfcst1
 
-# fcst1 post
+# fcst1 grib post
 if [ $runfcst1gribpost -eq 1 ]
 then
 fcst_grib_post_days=$fcstdays_step1
@@ -1057,7 +936,7 @@ if [ $fcstdays_step1 -eq 4 ];then fcst_grib_post_days=3;fi
 for NN in $(seq -w 01 01 $fcst_grib_post_days)
 do
   jobname=rtofs_forecast_grib_post.d${NN}
-  export jobid=$job
+  export jobid=$jobname.$pid
   export job=$jobname
   export NN
 cat << EOF_fcst1gribpost > $batchloc/rtofs.fcst1.grib.post.$NN.$pid
@@ -1065,7 +944,7 @@ cat << EOF_fcst1gribpost > $batchloc/rtofs.fcst1.grib.post.$NN.$pid
 #PBS -N $jobname
 #PBS -j oe
 #PBS -A $account
-#PBS -l place=vscatter,select=1:ncpus=11:mem=16GB
+#PBS -l place=vscatter,select=1:ncpus=11:mem=160GB
 #PBS -q $queue
 #PBS -l walltime=02:00:00
 #PBS -l debug=true
@@ -1077,17 +956,17 @@ module purge
 module load envvar
 module load prod_envir
 module load prod_util
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-pals/${cray_pals_ver}
-module load cfp/${cfp_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf4_ver}
-module load wgrib2/${wgrib2_ver}
-module load libjpeg/${libjpeg_ver}
-module load grib_util/${grib_util_ver}
-module load cdo/${cdo_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+module load cdo/${cdo_ver_rtofs}
 module list
 
 export COMROOT=$myCOMROOT
@@ -1107,7 +986,7 @@ fi
 
 if [ $# -gt 0 ]
 then
-  echo LAUNCHER: RTOFS-GLO forecast1 grib post is submitted - jobid $jobid_fcst1post
+  echo LAUNCHER: RTOFS-GLO forecast1 grib post is submitted - jobid $jobid_fcst1gribpost
 else
   echo 'LAUNCHER ERROR: RTOFS-GLO forecast1 grib post not submitted at host '`hostname`' at '`date` "error is $#"
   exit
@@ -1115,13 +994,68 @@ fi
 done
 fi # runfcst1gribpost
 
+# runfcst2pre
+if [ $runfcst2pre -eq 1 ]
+then
+jobname=rtofs_fcst2_pre
+export jobid=$jobname.$pid
+export job=$jobname
+
+cat << EOF_fcst2pre > $batchloc/rtofs.fcst2pre.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=1:mem=10GB
+#PBS -q $queue
+#PBS -l walltime=00:50:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module list
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=1
+
+$HOMErtofs/jobs/JRTOFS_GLO_FORECAST_STEP1_PRE
+
+EOF_fcst2pre
+
+if [ $runfcst1pre -eq 0 ]
+then
+   jobid_prefcst2=$(qsub $batchloc/rtofs.fcst2pre.$pid)
+else
+   jobid_prefcst2=$(qsub -W depend=afterok:$jobid_prefcst1 $batchloc/rtofs.fcst2pre.$pid)
+fi
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO pre-forecast1 var is submitted - jobid $jobid_polar
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO pre-forecast1 not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+fi # runfcst2pre
+
 # runufsfcst2
 if [ $runufsfcst2 -eq 1 ]
 then
 jobname=rtofs_fcst2
 export jobid=$jobname.$pid
 export job=$jobname
-mkdir -p ${myDATAROOT}/$jobid
 cat << EOF_ufsfcst2 > $batchloc/rtofs.fcst2.$pid
 #!/bin/bash
 #PBS -N $jobname
@@ -1190,6 +1124,70 @@ else
   exit
 fi
 fi # runufsfcst2
+
+# fcst2 grib post
+if [ $runfcst2gribpost -eq 1 ]
+then
+for NN in 04
+do
+  jobname=rtofs_forecast_grib_post.d${NN}
+  export jobid=$jobname.$pid
+  export job=$jobname
+  export NN
+cat << EOF_fcst2gribpost > $batchloc/rtofs.fcst2.grib.post.$NN.$pid
+#!/bin/bash
+#PBS -N $jobname
+#PBS -j oe
+#PBS -A $account
+#PBS -l place=vscatter,select=1:ncpus=11:mem=160GB
+#PBS -q $queue
+#PBS -l walltime=02:00:00
+#PBS -l debug=true
+#PBS -V
+
+source ${HOMErtofs_glo}/versions/run.ver
+
+module purge
+module load envvar
+module load prod_envir
+module load prod_util
+module load PrgEnv-intel/${PrgEnv_intel_ver_rtofs}
+module load intel/${intel_ver_rtofs}
+module load craype/${craype_ver_rtofs}
+module load cray-pals/${cray_pals_ver_rtofs}
+module load cfp/${cfp_ver_rtofs}
+module load hdf5/${hdf5_ver_rtofs}
+module load netcdf/${netcdf4_ver_rtofs}
+module load wgrib2/${wgrib2_ver_rtofs}
+module load libjpeg/${libjpeg_ver_rtofs}
+module load grib_util/${grib_util_ver_rtofs}
+module load cdo/${cdo_ver_rtofs}
+module list
+
+export COMROOT=$myCOMROOT
+export DATAROOT=$myDATAROOT
+export NPROCS=11
+
+$HOMErtofs/jobs/JRTOFS_GLO_FORECAST_GRIB2_POST
+
+EOF_fcst2gribpost
+
+if [ $runufsfcst2 -eq 0 ]
+then
+   jobid_fcst2gribpost=$(qsub $batchloc/rtofs.fcst2.grib.post.$NN.$pid)
+else
+   jobid_fcst2gribpost=$(qsub -W depend=afterok:$jobid_fcst2 $batchloc/rtofs.fcst2.grib.post.$NN.$pid)
+fi
+
+if [ $# -gt 0 ]
+then
+  echo LAUNCHER: RTOFS-GLO forecast2 grib post is submitted - jobid $jobid_fcst2gribpost
+else
+  echo 'LAUNCHER ERROR: RTOFS-GLO forecast2 grib post not submitted at host '`hostname`' at '`date` "error is $#"
+  exit
+fi
+done
+fi # runfcst2gribpost
 
 
 exit

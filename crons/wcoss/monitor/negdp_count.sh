@@ -5,8 +5,9 @@ set -x
 # you can modify these:
 
 envir=prod
-distro_prod=Dan.Iredell@noaa.gov,Zulema.Garraffo@noaa.gov,Avichal.Mehra@noaa.gov,Santha.Akella@noaa.gov
-distro_dev=Dan.Iredell@noaa.gov
+# until you (=Santha) has access to prod, `distro_prod` will not work.
+distro_prod=Santha.Akella@noaa.gov,Raphael.Dussin@noaa.gov
+distro_dev=Santha.Akella@noaa.gov,Raphael.Dussin@noaa.gov
 
 ###########################################################################
 

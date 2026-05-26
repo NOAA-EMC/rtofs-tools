@@ -9,7 +9,7 @@ version=v2.5
 
 # current HPSS location 
 #hdir=/NCEPDEV/emc-ocean/5year/emc.ncodapa/rtofs.v2
-hdir=/NCEPDEV/emc-ocean/5year/Dan.Iredell/wcoss2.prod
+hdir=/NCEPDEV/emc-ocean/5year/Santha.Akella/rtofs.v2p5
 
 ######################################################################################
 
@@ -27,8 +27,9 @@ hprod=$(grep primary /lfs/h1/ops/prod/config/prodmachinefile | cut -d: -f2)
 hdev=$(grep backup /lfs/h1/ops/prod/config/prodmachinefile | cut -d: -f2)
 
 if [[ $host == $hdev ]]; then
-  echo "$host is the dev machine - I will exit"
-  exit
+  echo "$host is the dev machine - Change when Santha wants to run this from prod"
+# echo "$host is the dev machine - I will exit"
+# exit
 elif [[ $host == $hprod ]]; then
   echo "$host is the prod machine - I will proceed"
 else
@@ -342,6 +343,7 @@ eofarchv1
 cd $tmpdir
 qsub ./ncoda_archive_archv1.$nday.$$
 
+# Turn it off, i.e., set =0 when ready with UFS DATM.
 doforcing=1
 if [ $doforcing -eq 1 ]
 then

@@ -3,31 +3,52 @@
 #  Gemini was used to assist with developing this code.
 # The code has been reviewed, edited, and validated by NWS staff.
 
-import argparse
-from datetime import datetime
-import xarray as xr
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import xesmf
 import numpy as np
-import os
+import xarray as xr
 
-# --- stats
+__all__ = ["basic_stats_region"]
+
+
+# --- stats ---
+
 
 def basic_stats_region(data, area, mask_region=None, debug=False):
-    """
-    Calculates mean, standard deviation and root-mean-square of s.
-    """
-    import numpy as np
-    import xarray
+    """Calculate basic statistics (min, max, mean, std, rms) for a region.
 
+    Computes the minimum, maximum, area-weighted mean, area-weighted standard
+    deviation, and area-weighted root-mean-square (RMS) of the input data field.
+    Any NaN or invalid values in the data are automatically masked out and excluded
+    from the statistical calculations.
+
+    Parameters
+    ----------
+    data : xarray.DataArray or numpy.ndarray
+        The input data field (e.g., temperature bias).
+    area : xarray.DataArray or numpy.ndarray
+        Grid cell areas used for weighting.
+    mask_region : xarray.DataArray or numpy.ndarray, optional
+        A binary mask (1 for active cells, 0 for inactive/masked cells).
+        Default is None.
+    debug : bool, optional
+        If True, prints debug statements detailing intermediate area and data sums.
+        Default is False.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the calculated statistics with keys:
+        - 'min': Minimum value.
+        - 'max': Maximum value.
+        - 'mean': Area-weighted mean.
+        - 'std': Area-weighted standard deviation.
+        - 'rms': Area-weighted root-mean-square.
+    """
     # build a numpy masked array based on NaN
-    if type(data) == xarray.core.dataarray.DataArray:
+    if isinstance(data, xr.DataArray):
         data = data.to_numpy()
-    if type(area) == xarray.core.dataarray.DataArray:
+    if isinstance(area, xr.DataArray):
         area = area.to_numpy()
-    if type(mask_region) == xarray.core.dataarray.DataArray:
+    if isinstance(mask_region, xr.DataArray):
         mask_region = mask_region.to_numpy()
 
     masked_data = np.ma.masked_invalid(data)
@@ -64,4 +85,3 @@ def basic_stats_region(data, area, mask_region=None, debug=False):
     if debug:
         print("stats: rms(s) =", rms)
     return dict(min=dMin, max=dMax, mean=mean, std=std, rms=rms)
-

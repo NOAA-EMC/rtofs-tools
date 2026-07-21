@@ -116,6 +116,116 @@ def create_grid_OSTIA(ostia_file, hres=0.05, c_cont=True):
     return ds
 
 
+def create_grid_CMEMS(cmems_file, hres=0.125, c_cont=True):
+    """Create a grid dataset compatible with xESMF from an CMEMS file.
+
+    Extracts longitude and latitude coordinates from the CMEMS dataset,
+    computes grid boundary coordinates, and constructs a land/ocean mask where
+    water (1) is mapped to 1, and land is mapped to 0.
+
+    Parameters
+    ----------
+    cmems_file : str or Path
+        Path to the CMEMS netCDF file.
+    hres : float, optional
+        Horizontal resolution of the CMEMS grid in degrees. Default is 0.125.
+    c_cont : bool, optional
+        If True, returns the dataset variables as C-contiguous numpy arrays.
+        Default is True.
+
+    Returns
+    -------
+    xarray.Dataset
+        A dataset containing the CMEMS grid variables:
+        - 'lon', 'lat': 1D arrays of cell centers (degrees).
+        - 'lon_b', 'lat_b': 1D arrays of cell boundaries (degrees).
+        - 'mask': 2D land/ocean mask (1 for ocean/sea-ice, 0 otherwise).
+    """
+    cmems = xr.open_dataset(cmems_file)
+    ds = xr.Dataset()
+    ds["lon"] = xr.DataArray(data=cmems["lon"].values, dims=("x"))
+    ds["lat"] = xr.DataArray(data=cmems["lat"].values, dims=("y"))
+    # my and nrt are not consistent in longitude definition...
+    if ds["lon"][0] >= 0.:
+        ds["lon_b"] = xr.DataArray(
+            data=np.arange(0, 360 + hres, hres), dims=("x_b")
+        )
+    else:
+        ds["lon_b"] = xr.DataArray(
+            data=np.arange(-180, 180 + hres, hres), dims=("x_b")
+        )
+    ds["lat_b"] = xr.DataArray(
+        data=np.arange(-90, 90 + hres, hres), dims=("y_b")
+    )
+    mask = xr.where(cmems["sos"].squeeze().fillna(-9999.) == -9999., 0, 1)
+    ds["mask"] = xr.DataArray(data=mask.values, dims=("y", "x"))
+
+    assert ds["lon_b"].shape[0] == ds["lon"].shape[0] + 1
+    assert ds["lat_b"].shape[0] == ds["lat"].shape[0] + 1
+    if c_cont:
+        out = xr.Dataset()
+        out["lon"] = (ds["lon"].dims, np.ascontiguousarray(ds["lon"].values))
+        out["lat"] = (ds["lat"].dims, np.ascontiguousarray(ds["lat"].values))
+        out["lon_b"] = (ds["lon_b"].dims, np.ascontiguousarray(ds["lon_b"].values))
+        out["lat_b"] = (ds["lat_b"].dims, np.ascontiguousarray(ds["lat_b"].values))
+        out["mask"] = (ds["mask"].dims, np.ascontiguousarray(ds["mask"].values))
+        return out
+
+    return ds
+
+
+def create_grid_CMEMS_SSH(cmems_file, hres=0.125, c_cont=True):
+    """Create a grid dataset compatible with xESMF from an CMEMS SSH file.
+
+    Extracts longitude and latitude coordinates from the CMEMS dataset,
+    computes grid boundary coordinates, and constructs a land/ocean mask where
+    water (1) is mapped to 1, and land is mapped to 0.
+
+    Parameters
+    ----------
+    cmems_file : str or Path
+        Path to the CMEMS netCDF file.
+    hres : float, optional
+        Horizontal resolution of the CMEMS grid in degrees. Default is 0.125.
+    c_cont : bool, optional
+        If True, returns the dataset variables as C-contiguous numpy arrays.
+        Default is True.
+
+    Returns
+    -------
+    xarray.Dataset
+        A dataset containing the CMEMS grid variables:
+        - 'lon', 'lat': 1D arrays of cell centers (degrees).
+        - 'lon_b', 'lat_b': 1D arrays of cell boundaries (degrees).
+        - 'mask': 2D land/ocean mask (1 for ocean/sea-ice, 0 otherwise).
+    """
+    cmems = xr.open_dataset(cmems_file)
+    ds = xr.Dataset()
+    ds["lon"] = xr.DataArray(data=cmems["longitude"].values, dims=("x"))
+    ds["lat"] = xr.DataArray(data=cmems["latitude"].values, dims=("y"))
+
+    lon_b = np.concatenate([cmems["lon_bnds"].isel(nv=0).values, [cmems["lon_bnds"].isel(nv=1)[-1].values]], axis=0)
+    lat_b = np.concatenate([cmems["lat_bnds"].isel(nv=0).values, [cmems["lat_bnds"].isel(nv=1)[-1].values]], axis=0)
+
+    ds["lon_b"] = xr.DataArray(lon_b, dims=("x_b"))
+    ds["lat_b"] = xr.DataArray(lat_b, dims=("y_b"))
+    mask = xr.where(cmems["adt"].squeeze().fillna(-9999.) == -9999., 0, 1)
+    ds["mask"] = xr.DataArray(data=mask.values, dims=("y", "x"))
+
+    assert ds["lon_b"].shape[0] == ds["lon"].shape[0] + 1
+    assert ds["lat_b"].shape[0] == ds["lat"].shape[0] + 1
+    if c_cont:
+        out = xr.Dataset()
+        out["lon"] = (ds["lon"].dims, np.ascontiguousarray(ds["lon"].values))
+        out["lat"] = (ds["lat"].dims, np.ascontiguousarray(ds["lat"].values))
+        out["lon_b"] = (ds["lon_b"].dims, np.ascontiguousarray(ds["lon_b"].values))
+        out["lat_b"] = (ds["lat_b"].dims, np.ascontiguousarray(ds["lat_b"].values))
+        out["mask"] = (ds["mask"].dims, np.ascontiguousarray(ds["mask"].values))
+        return out
+
+    return ds
+
+
 def create_grid_RTOFS(hgrid_path, sst, c_cont=True):
     """Create a grid dataset compatible with xESMF from RTOFS hgrid and SST data.
 

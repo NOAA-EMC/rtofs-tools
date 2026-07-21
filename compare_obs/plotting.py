@@ -9,15 +9,18 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib
 import matplotlib.pyplot as plt
+import cmocean
 
 from stats import basic_stats_region
 
 __all__ = [
     "plot_glo_sst_obs_bias_3rows",
+    "plot_glo_sss_obs_bias_3rows",
+    "plot_glo_ssh_obs_bias_3rows",
     "add_colorbar_obs",
     "add_colorbar_bias",
     "add_titles_3rows",
-    "plot_glo_sst",
+    "plot_glo_field",
     "plot_glo_bias",
     "add_land_coastlines",
     "add_stats",
@@ -73,12 +76,130 @@ def plot_glo_sst_obs_bias_3rows(
         subplot_kw=dict(projection=ccrs.Robinson(central_longitude=200)),
     )
     # plot the various fields
-    CN = plot_glo_sst(axs[0], grid["lon"], grid["lat"], obs)
+    CN = plot_glo_field(axs[0], grid["lon"], grid["lat"], obs)
     CD = plot_glo_bias(axs[1], grid["lon"], grid["lat"], ref - obs, grid["area"])
     _ = plot_glo_bias(axs[2], grid["lon"], grid["lat"], dev - obs, grid["area"])
     # add colorbars
     add_colorbar_obs(f, CN)
     add_colorbar_bias(f, CD)
+    # cosmetics
+    for k in range(3):
+        add_land_coastlines(axs[k])
+    add_titles_3rows(axs, titles=titles, date=date, offset=offset)
+    return f
+
+
+def plot_glo_sss_obs_bias_3rows(
+    grid,
+    obs,
+    ref,
+    dev,
+    titles=["CMEMS", "RTOFS 2.5", "RTOFS 3"],
+    date=None,
+    offset=0,
+):
+    """Create a 3-panel figure comparing observed SSS and model biases.
+
+    The first row displays the observed SSS. The second and third rows display
+    the salinity bias (Model - Observation) for the reference and development
+    runs, respectively.
+
+    Parameters
+    ----------
+    grid : xarray.Dataset or dict-like
+        Grid dataset containing 'lon', 'lat', and 'area'.
+    obs : xarray.DataArray or numpy.ndarray
+        Observed SSS field.
+    ref : xarray.DataArray or numpy.ndarray
+        Reference model SSS field.
+    dev : xarray.DataArray or numpy.ndarray
+        Development model SSS field.
+    titles : list of str, optional
+        Titles for the three panels. Default is ["CMEMS", "RTOFS 2.5", "RTOFS 3"].
+    date : datetime, optional
+        Base date of the comparison. Default is None.
+    offset : int, optional
+        Offset in days to add to the base date. Default is 0.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The generated figure containing the three subplots.
+    """
+    matplotlib.rcParams.update({"font.size": 20})
+
+    # set up the plot
+    f, axs = plt.subplots(
+        nrows=3,
+        figsize=[12, 24],
+        subplot_kw=dict(projection=ccrs.Robinson(central_longitude=200)),
+    )
+    # plot the various fields
+    CN = plot_glo_field(axs[0], grid["lon"], grid["lat"], obs, vmin=10, vmax=36, cmap=cmocean.cm.haline)
+    CD = plot_glo_bias(axs[1], grid["lon"], grid["lat"], ref - obs, grid["area"], cmap=cmocean.cm.balance)
+    _ = plot_glo_bias(axs[2], grid["lon"], grid["lat"], dev - obs, grid["area"], cmap=cmocean.cm.balance)
+    # add colorbars
+    add_colorbar_obs(f, CN, field="SSS", units="PSU")
+    add_colorbar_bias(f, CD, field="SSS", units="PSU")
+    # cosmetics
+    for k in range(3):
+        add_land_coastlines(axs[k])
+    add_titles_3rows(axs, titles=titles, date=date, offset=offset)
+    return f
+
+
+def plot_glo_ssh_obs_bias_3rows(
+    grid,
+    obs,
+    ref,
+    dev,
+    titles=["CMEMS", "RTOFS 2.5", "RTOFS 3"],
+    date=None,
+    offset=0,
+):
+    """Create a 3-panel figure comparing observed SSH and model biases.
+
+    The first row displays the observed SSH - global mean. The second and third rows display
+    the SSH bias (Model - Observation) for the reference and development
+    runs, respectively.
+
+    Parameters
+    ----------
+    grid : xarray.Dataset or dict-like
+        Grid dataset containing 'lon', 'lat', and 'area'.
+    obs : xarray.DataArray or numpy.ndarray
+        Observed SSH field minus global average.
+    ref : xarray.DataArray or numpy.ndarray
+        Reference model SSH field minus global average.
+    dev : xarray.DataArray or numpy.ndarray
+        Development model SSH field minus global average.
+    titles : list of str, optional
+        Titles for the three panels. Default is ["CMEMS", "RTOFS 2.5", "RTOFS 3"].
+    date : datetime, optional
+        Base date of the comparison. Default is None.
+    offset : int, optional
+        Offset in days to add to the base date. Default is 0.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The generated figure containing the three subplots.
+    """
+    matplotlib.rcParams.update({"font.size": 20})
+
+    # set up the plot
+    f, axs = plt.subplots(
+        nrows=3,
+        figsize=[12, 24],
+        subplot_kw=dict(projection=ccrs.Robinson(central_longitude=200)),
+    )
+    # plot the various fields
+    CN = plot_glo_field(axs[0], grid["lon"], grid["lat"], obs, vmin=-2, vmax=2, cmap=cmocean.cm.delta)
+    CD = plot_glo_bias(axs[1], grid["lon"], grid["lat"], ref - obs, grid["area"], vmin=-0.5, vmax=0.5, cmap=cmocean.cm.balance)
+    _ = plot_glo_bias(axs[2], grid["lon"], grid["lat"], dev - obs, grid["area"], vmin=-0.5, vmax=0.5, cmap=cmocean.cm.balance)
+    # add colorbars
+    add_colorbar_obs(f, CN, field="SSH", units="m")
+    add_colorbar_bias(f, CD, field="SSH", units="m")
     # cosmetics
     for k in range(3):
         add_land_coastlines(axs[k])
@@ -153,8 +274,8 @@ def add_titles_3rows(axs, titles=["obs", "ref", "dev"], date=None, offset=0):
         axs[2].set_title(f"{titles[2]} --- forecast t + {offset} days")
 
 
-def plot_glo_sst(ax, lon, lat, array, vmin=-2, vmax=35, cmap="gist_ncar"):
-    """Plot the global SST field on the specified axes.
+def plot_glo_field(ax, lon, lat, array, vmin=-2, vmax=35, cmap="gist_ncar"):
+    """Plot the global field on the specified axes.
 
     Parameters
     ----------
@@ -165,7 +286,7 @@ def plot_glo_sst(ax, lon, lat, array, vmin=-2, vmax=35, cmap="gist_ncar"):
     lat : xarray.DataArray or numpy.ndarray
         2D latitude coordinates.
     array : xarray.DataArray or numpy.ndarray
-        SST data to plot.
+        data to plot.
     vmin : float, optional
         Minimum value for the colormap scaling. Default is -2.
     vmax : float, optional

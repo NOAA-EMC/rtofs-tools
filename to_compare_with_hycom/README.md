@@ -41,11 +41,11 @@ Use the `arch_to_nc.sh` wrapper to extract variables from the `.a`/`.b` files in
 - Extract all layers of temp and save to a custom directory:
   `./arch_to_nc.sh /lfs/h1/ops/prod/com/rtofs/v2.5/rtofs.20260804/rtofs_glo.t00z.n-24.archv temp all /lfs/h2/emc/ptmp/santha.akella/xx/`
 
-2. Plotting Equatorial Cross-Sections
+## 2. Plotting Equatorial Cross-Sections
 - `plot_eq_sec.py` plots 2D longitudinal cross-sections (Longitude vs. Layer Index) for two variables simultaneously at the Equator. 
 - It reads directly from the binary archives, bypassing the need for intermediate NetCDF generation.
 
-./plot_eq_sec.py <file_prefix> [--var1 VAR1] [--var2 VAR2] [--grid GRID_PREFIX]
+`./plot_eq_sec.py <file_prefix> [--var1 VAR1] [--var2 VAR2] [--grid GRID_PREFIX]`
 
 ## Examples:
 - Plot the default variables (temp and salin) for a given archive file:

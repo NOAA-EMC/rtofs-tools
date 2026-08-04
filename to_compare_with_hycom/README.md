@@ -25,9 +25,7 @@ Ensure you have a Python 3 environment loaded with the following modules:
 
 Use the `arch_to_nc.sh` wrapper to extract variables from the `.a`/`.b` files into a single `.nc` file. 
 
-**Syntax:**
-```bash
-./arch_to_nc.sh <file_prefix> [variable] [layer_index] [output_dir]
+`./arch_to_nc.sh <file_prefix> [variable] [layer_index] [output_dir]`
 
 ## Notes:
 - `file_prefix`: Absolute or relative path to the archive file (can safely include or exclude the .a/.b extension).

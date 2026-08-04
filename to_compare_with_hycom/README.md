@@ -14,7 +14,7 @@ Ensure you have a Python 3 environment loaded with the following modules:
 
 ## File Overview
 
-1.  **`hycom_io.py`**: The core low-level I/O library (adapted from the BB86 package). Handles parsing `.b` headers, reading Fortran binary `.a` files, and applying grid mapping with appropriate padding.
+1.  **`hycom_io.py`**: The core low-level I/O library (adapted from the [BB86 package](https://github.com/abozec/BB86_PACKAGE)). Handles parsing `.b` headers, reading Fortran binary `.a` files, and applying grid mapping with appropriate padding.
 2.  **`convert_hycom_arch_nc.py`**: The Python engine that extracts requested variables/layers from the HYCOM archives, attaches CF-compliant metadata (lat/lon/layers), and exports an `xarray` Dataset to `.nc`.
 3.  **`arch_to_nc.sh`**: The Bash wrapper for the conversion tool. Simplifies argument passing and handles file extensions gracefully.
 4.  **`plot_eq_sec.py`**: A plotting tool that reads HYCOM archives directly into memory and generates side-by-side, 2D cross-section plots of two variables at the Equator (latitude ≈ 0). 

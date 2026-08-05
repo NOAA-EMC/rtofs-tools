@@ -1,6 +1,9 @@
 # RTOFS/HYCOM Processing and Plotting Tools
 
-This toolset provides memory-efficient, command-line utilities to convert standard HYCOM/RTOFS `.a` and `.b` archive files into CF-compliant NetCDF files, and to generate equatorial cross-section plots directly from the archive files.
+This toolset provides memory-efficient, command-line utilities to:
+- Convert standard HYCOM/RTOFS `.a` and `.b` archive files into CF-compliant NetCDF files.
+- Generate equatorial cross-section plots directly from the archive files.
+- Convert NCODA generated increments (binary formatted files) to NetCDF formatted files.
 
 ## Dependencies
 Ensure you have a Python 3 environment loaded with the following modules:

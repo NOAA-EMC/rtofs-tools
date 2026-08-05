@@ -10,7 +10,11 @@ Ensure you have a Python 3 environment loaded with the following modules:
 *   `argparse` (Standard library)
 *   `os` (Standard library)
 
-*Note: On an HPC system, these can typically be satisfied by loading standard Python/Anaconda modules.*
+### Note: 
+- On an HPC system, these can typically be satisfied by loading standard Python/Anaconda modules.
+- If you are on WCOSS-2, where the input files are staged (from production system output), simply:
+  `module load intel ve/rtofs`
+
 
 ## File Overview
 

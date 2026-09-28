@@ -1,0 +1,5 @@
+# Build
+build/*
+
+# Log files
+*.log

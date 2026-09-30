@@ -1,0 +1,19 @@
+# The following CICE4 settings must match those in RTOFS v2.5
+# If you change them, then you bear the consequences.
+
+cice_params:
+  "cice4":
+    grid  : "B"
+    nx    : 4500   # I dim
+    ny    : 3297   # J dim
+    ncat  : 5
+    nilyr : 4
+    nslyr : 1
+
+  "cice6":
+    grid : "C"
+    nx   : 4500
+    ny   : 3297
+    ncat  : 5
+    nilyr : 7
+    nslyr : 1

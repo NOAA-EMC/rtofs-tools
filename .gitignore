@@ -39,3 +39,12 @@
 
 # debug information files
 *.dwo
+
+# Modules and backups #
+#######################
+**/__pycache__
+*.py*bkp
+**/bkp
+.*.swp
+.*
+

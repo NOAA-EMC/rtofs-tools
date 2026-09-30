@@ -76,42 +76,52 @@ YYYYMM=${TARGET_DATE:0:6}
 VERSION=$(get_rtofs_version "$TARGET_DATE")
 
 # ==============================================================================
-# 3. Construct HPSS Path
+# 3. Construct HPSS Paths
 # ==============================================================================
-TAR_FILE="/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${TARGET_DATE}/com_rtofs_${VERSION}_rtofs.${TARGET_DATE}.restart.tar"
+TAR_AB="/NCEPPROD/5year/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${TARGET_DATE}/com_rtofs_${VERSION}_rtofs.${TARGET_DATE}.ab.tar"
+TAR_RESTART="/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${TARGET_DATE}/com_rtofs_${VERSION}_rtofs.${TARGET_DATE}.restart.tar"
 
 echo "=================================================="
 echo "Machine Detected: $MACHINE_ID ($HOSTNAME_F)"
 echo "Target Date     : $TARGET_DATE"
 echo "RTOFS Version   : $VERSION"
-echo "Archive Path    : $TAR_FILE"
+echo "AB Archive Path : $TAR_AB"
+echo "Restart Path    : $TAR_RESTART"
 echo "Output Directory: $OUTPUT_DIR"
 echo "=================================================="
 
 # ==============================================================================
-# 4. Extract & Verify Specific n00 Restart Files
+# 4. Extract & Verify Specific n00 Files
 # ==============================================================================
-FILE_A="rtofs_glo.t00z.n00.restart.a.tgz"
-FILE_B="rtofs_glo.t00z.n00.restart.b"
+FILE_ARCHV_A="rtofs_glo.t00z.n00.archv.a.tgz"
+FILE_ARCHV_B="rtofs_glo.t00z.n00.archv.b"
 FILE_CICE="rtofs_glo.t00z.n00.restart_cice.tgz"
 
 cd "$OUTPUT_DIR"
 
-echo "Initiating htar extraction for n00 files..."
-htar -xvf "$TAR_FILE" \
-    "./$FILE_A" \
-    "./$FILE_B" \
+echo "Initiating parallel htar (-T 4) extraction for n00 archive files from .ab.tar..."
+htar -T 4 -xvf "$TAR_AB" \
+    "./$FILE_ARCHV_A" \
+    "./$FILE_ARCHV_B"
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: htar extraction of .ab.tar failed. Ensure you have valid HPSS credentials."
+    exit 1
+fi
+
+echo "Initiating parallel htar (-T 4) extraction for n00 CICE restart from .restart.tar..."
+htar -T 4 -xvf "$TAR_RESTART" \
     "./$FILE_CICE"
 
 if [ $? -ne 0 ]; then
-    echo "ERROR: htar extraction failed. Ensure you have valid HPSS credentials."
+    echo "ERROR: htar extraction of .restart.tar failed. Ensure you have valid HPSS credentials."
     exit 1
 fi
 
 echo "Verifying file integrities in $OUTPUT_DIR..."
 MISSING_OR_EMPTY=0
 
-for FILE in "$FILE_A" "$FILE_B" "$FILE_CICE"; do
+for FILE in "$FILE_ARCHV_A" "$FILE_ARCHV_B" "$FILE_CICE"; do
     if [ ! -s "$FILE" ]; then
         echo "ERROR: $FILE is missing or 0 bytes!"
         MISSING_OR_EMPTY=1
@@ -121,7 +131,7 @@ for FILE in "$FILE_A" "$FILE_B" "$FILE_CICE"; do
 done
 
 if [ $MISSING_OR_EMPTY -ne 0 ]; then
-    echo "FATAL: One or more restart files failed to extract properly."
+    echo "FATAL: One or more restart/archive files failed to extract properly."
     exit 1
 fi
 
@@ -132,13 +142,13 @@ echo "=================================================="
 echo "Unpacking nested tarballs..."
 echo "=================================================="
 
-tar -xzf "$FILE_A"
-if [ $? -ne 0 ]; then echo "FATAL: Failed to unpack $FILE_A"; exit 1; fi
+tar -xzf "$FILE_ARCHV_A"
+if [ $? -ne 0 ]; then echo "FATAL: Failed to unpack $FILE_ARCHV_A"; exit 1; fi
 
 tar -xzf "$FILE_CICE"
 if [ $? -ne 0 ]; then echo "FATAL: Failed to unpack $FILE_CICE"; exit 1; fi
 
 echo "Cleaning up raw .tgz files to save space..."
-rm -f "$FILE_A" "$FILE_CICE"
+rm -f "$FILE_ARCHV_A" "$FILE_CICE"
 
-echo "SUCCESS: Raw HYCOM (.a/.b) and CICE4 binaries are ready in $OUTPUT_DIR."
+echo "SUCCESS: HYCOM archives (.a/.b) and CICE4 binaries are ready in $OUTPUT_DIR."

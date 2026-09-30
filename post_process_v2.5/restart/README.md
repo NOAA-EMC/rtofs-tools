@@ -54,14 +54,14 @@ The wrapper:
 
 ### Usage of wrapper script
 ```bash
-./run_cice_restart_conversion.sh --rdate <YYYYMMDD> --in <INPUT_FILE> --out <OUTPUT_FILE> --tmp <TEMPLATE_FILE>
+./run_cice_restart_conversion.sh --rdate <YYYYMMDD> --in <INPUT_FILE> --out <OUTPUT_DIR> --tmp <TEMPLATE_FILE>
 ```
 Example:
 ```
 ./run_cice_restart_conversion.sh \
   --rdate 20251215 \
   --in /lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/rtofs_glo.t00z.n00.restart_cice \
-  --out /lfs/h2/emc/ptmp/santha.akella/TMP/iced.2025-12-15-00000.nc \
+  --out /lfs/h2/emc/ptmp/santha.akella/TMP/ \
   --tmp /lfs/h2/emc/couple/noscrub/santha.akella/data/restart/zg/iced.2025-12-15-00000.nc
 ```
 
@@ -70,9 +70,10 @@ Example:
 ./convert_cice4_to_cice6_restart.py -h
 ```
 Example:
-```./convert_cice4_to_cice6_restart.py \
-     --fyaml ./restart_cice6.yaml --machine wcoss2 --rdate 20251215 \
-     --infile /lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/rtofs_glo.t00z.n00.restart_cice \
-     --outfile /lfs/h2/emc/ptmp/santha.akella/TMP/ \
-     --tmpfile /lfs/h2/emc/couple/noscrub/santha.akella/data/restart/zg/iced.2025-12-15-00000.nc
+```
+./convert_cice4_to_cice6_restart.py \
+  --fyaml ./restart_cice6.yaml --machine wcoss2 --rdate 20251215 \
+  --infile /lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/rtofs_glo.t00z.n00.restart_cice \
+  --outfile /lfs/h2/emc/ptmp/santha.akella/TMP/ \
+  --tmpfile /lfs/h2/emc/couple/noscrub/santha.akella/data/restart/zg/iced.2025-12-15-00000.nc
 ```

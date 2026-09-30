@@ -46,11 +46,33 @@ deletes the raw .tgz files to halve the storage footprint.
 **Python Engine:** `convert_cice4_to_cice6_restart.py`
 
 Translates the unformatted sequential binary CICE4 restart into a fully UFS-compliant CICE6 NetCDF4 restart.
+The wrapper:
+ - Automatically detects the machine (WCOSS2 or Ursa).
+ - Verifies the active Python environment.
+ - Validates input and template restart files before execution.
+ - Confirms the output file integrity afterwards.
 
-### Usage
+### Usage of wrapper script
 ```bash
-./run_cice_restart_conversion.sh <IN_DIR> <OUT_DIR> <YYYYMMDD> [options]
+./run_cice_restart_conversion.sh --rdate <YYYYMMDD> --in <INPUT_FILE> --out <OUTPUT_FILE> --tmp <TEMPLATE_FILE>
 ```
-Example: `./run_cice_restart_conversion.sh --rdate 20220118 --out rtofs_glo.20220118_00000.restart_cice.nc --in rtofs_glo.t00z.n-24.restart_cice --tmp iced.2025-05-08-00000.nc`
+Example:
+```
+./run_cice_restart_conversion.sh \
+  --rdate 20251215 \
+  --in /lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/rtofs_glo.t00z.n00.restart_cice \
+  --out /lfs/h2/emc/ptmp/santha.akella/TMP/iced.2025-12-15-00000.nc \
+  --tmp /lfs/h2/emc/couple/noscrub/santha.akella/data/restart/zg/iced.2025-12-15-00000.nc
+```
 
-**Note**: Optional `ktherm` was retained so that one can run CICE6 in a similar fashion as CICE4 with BL ice thermodynamics.
+### Usage of python script
+```bash
+./convert_cice4_to_cice6_restart.py -h
+```
+Example:
+```./convert_cice4_to_cice6_restart.py \
+     --fyaml ./restart_cice6.yaml --machine wcoss2 --rdate 20251215 \
+     --infile /lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/rtofs_glo.t00z.n00.restart_cice \
+     --outfile /lfs/h2/emc/ptmp/santha.akella/TMP/ \
+     --tmpfile /lfs/h2/emc/couple/noscrub/santha.akella/data/restart/zg/iced.2025-12-15-00000.nc
+```

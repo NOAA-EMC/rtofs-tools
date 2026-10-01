@@ -16,12 +16,13 @@ idm = 4500
 jdm = 3298
 kdm = 41
 
+depth_file = os.path.join(sibling_dir, "FIX", "hycom", "rtofs_glo.navy_0.08.regional.depth.a")
+
 input_data_path = "/lfs/h2/emc/ptmp/santha.akella/restarts/in/20251215/"
-depth_file   = input_data_path + "rtofs_glo.navy_0.08.regional.depth.a"  # No .a/.b, hycom_io handles it
 archive_file = input_data_path + "rtofs_glo.t00z.n00.archv"
 
 # 1. Read Bathymetry (Depth)
-print(f"Reading depth from {depth_file}...")
+print(f"Reading depth from {depth_file}")
 depths = read_hycom_depth(depth_file, idm, jdm, replace_to_nan=True)
 
 # Create Land/Sea mask (ip in Fortran: 1 for ocean, 0 for land)

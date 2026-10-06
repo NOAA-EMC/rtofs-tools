@@ -6,10 +6,23 @@
 import argparse
 from datetime import datetime
 
-__all__ = ["valid_date", "str2bool"]
+__all__ = ["valid_date", "str2bool", "get_user_number"]
 
 
 # --- utilities ---
+
+
+def get_user_number():
+    while True:
+        try:
+            # Ask the user for input and store it as a string
+            user_input = input("Please enter a number: ")
+            # Convert the string into a integer
+            number = int(user_input)
+            return number
+        except ValueError:
+            # This catches the error if the user types something like "hello"
+            print("That's not a valid number. Please try again.")
 
 
 def valid_date(s):

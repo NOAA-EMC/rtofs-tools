@@ -226,20 +226,20 @@ def create_grid_CMEMS_SSH(cmems_file, hres=0.125, c_cont=True):
     return ds
 
 
-def create_grid_RTOFS(hgrid_path, sst, c_cont=True):
-    """Create a grid dataset compatible with xESMF from RTOFS hgrid and SST data.
+def create_grid_RTOFS(hgrid_path, surf=None, c_cont=True):
+    """Create a grid dataset compatible with xESMF from RTOFS hgrid and surface data.
 
     Extracts longitude and latitude cell centers (using odd indices from the RTOFS
     supergrid) and boundaries (using even indices) from the horizontal grid file.
-    The land/ocean mask is derived from the provided SST data, where non-missing
+    The land/ocean mask is derived from the provided surface data, where non-missing
     values are mapped to 1 and missing/NaN values are mapped to 0.
 
     Parameters
     ----------
     hgrid_path : str or Path
         Path to the RTOFS horizontal grid (hgrid) netCDF file.
-    sst : xarray.DataArray
-        Sea surface temperature data array used to derive the land/ocean mask.
+    surf : xarray.DataArray
+        Sea surface field data array used to derive the land/ocean mask.
     c_cont : bool, optional
         If True, returns the dataset variables as C-contiguous numpy arrays.
         Default is True.
@@ -266,14 +266,16 @@ def create_grid_RTOFS(hgrid_path, sst, c_cont=True):
     ds["lat_b"] = xr.DataArray(
         data=hgrid["y"].values[0::2, 0::2], dims=("y_b", "x_b")
     )
-    mask = xr.where(sst.fillna(-9999.0) == -9999.0, 0, 1).values
-    ds["mask"] = xr.DataArray(data=mask, dims=("y", "x"))
+    if surf is not None:
+        mask = xr.where(surf.fillna(-9999.0) == -9999.0, 0, 1).values
+        ds["mask"] = xr.DataArray(data=mask, dims=("y", "x"))
     if c_cont:
         out = xr.Dataset()
         out["lon"] = (ds["lon"].dims, np.ascontiguousarray(ds["lon"].values))
         out["lat"] = (ds["lat"].dims, np.ascontiguousarray(ds["lat"].values))
         out["lon_b"] = (ds["lon_b"].dims, np.ascontiguousarray(ds["lon_b"].values))
         out["lat_b"] = (ds["lat_b"].dims, np.ascontiguousarray(ds["lat_b"].values))
-        out["mask"] = (ds["mask"].dims, np.ascontiguousarray(ds["mask"].values))
+        if surf is not None:
+            out["mask"] = (ds["mask"].dims, np.ascontiguousarray(ds["mask"].values))
         return out
     return ds

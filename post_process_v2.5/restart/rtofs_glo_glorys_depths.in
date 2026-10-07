@@ -1,0 +1,78 @@
+archv.a
+NetCDF
+ 000    'iexpt ' = experiment number x10 (000=from archive file)
+   0    'yrflag' = days in year flag (0=360J16,1=366J16,2=366J01,3-actual)
+4500    'idm   ' = longitudinal array size
+3298    'jdm   ' = latitudinal  array size
+  41    'kdm   ' = number of layers
+  34.0  'thbase' = reference density (sigma units)
+   0    'smooth' = smooth the layered fields (0=F,1=T)
+   0    'baclin' = extract baroclinic velocity (0=total,1=baroclinic)
+   1    'iorign' = i-origin of plotted subregion
+   1    'jorign' = j-origin of plotted subregion
+   0    'idmp  ' = i-extent of plotted subregion (<=idm; 0 implies idm)
+   0    'jdmp  ' = j-extent of plotted subregion (<=jdm; 0 implies jdm)
+   1    'itype ' = interpolation type (0=sample,1=linear)
+  50    'kz    ' = number of depths to sample
+    0.4940  'z     ' = sample depth  1
+    1.5414  'z     ' = sample depth  2
+    2.6457  'z     ' = sample depth  3
+    3.8195  'z     ' = sample depth  4
+    5.0782  'z     ' = sample depth  5
+    6.4406  'z     ' = sample depth  6
+    7.9296  'z     ' = sample depth  7
+    9.5730  'z     ' = sample depth  8
+   11.4050  'z     ' = sample depth  9
+   13.4671  'z     ' = sample depth 10
+   15.8101  'z     ' = sample depth 11
+   18.4956  'z     ' = sample depth 12
+   21.5988  'z     ' = sample depth 13
+   25.2114  'z     ' = sample depth 14
+   29.4447  'z     ' = sample depth 15
+   34.4341  'z     ' = sample depth 16
+   40.3440  'z     ' = sample depth 17
+   47.3737  'z     ' = sample depth 18
+   55.7643  'z     ' = sample depth 19
+   65.8073  'z     ' = sample depth 20
+   77.8538  'z     ' = sample depth 21
+   92.3261  'z     ' = sample depth 22
+  109.7293  'z     ' = sample depth 23
+  130.6660  'z     ' = sample depth 24
+  155.8507  'z     ' = sample depth 25
+  186.1256  'z     ' = sample depth 26
+  222.4752  'z     ' = sample depth 27
+  266.0403  'z     ' = sample depth 28
+  318.1274  'z     ' = sample depth 29
+  380.2130  'z     ' = sample depth 30
+  453.9377  'z     ' = sample depth 31
+  541.0889  'z     ' = sample depth 32
+  643.5668  'z     ' = sample depth 33
+  763.3331  'z     ' = sample depth 34
+  902.3393  'z     ' = sample depth 35
+ 1062.4400  'z     ' = sample depth 36
+ 1245.2910  'z     ' = sample depth 37
+ 1452.2510  'z     ' = sample depth 38
+ 1684.2840  'z     ' = sample depth 39
+ 1941.8930  'z     ' = sample depth 40
+ 2225.0780  'z     ' = sample depth 41
+ 2533.3360  'z     ' = sample depth 42
+ 2865.7030  'z     ' = sample depth 43
+ 3220.8200  'z     ' = sample depth 44
+ 3597.0320  'z     ' = sample depth 45
+ 3992.4840  'z     ' = sample depth 46
+ 4405.2240  'z     ' = sample depth 47
+ 4833.2910  'z     ' = sample depth 48
+ 5274.7840  'z     ' = sample depth 49
+ 5727.9170  'z     ' = sample depth 50
+   00    'botio ' = bathymetry  I/O unit (0 no I/O)
+   00    'mltio ' = mix.l.thk.  I/O unit (0 no I/O)
+    0.0  'tempml' = temperature jump across mixed-layer (degC,  0 no I/O)
+    0.0  'densml' =     density jump across mixed-layer (kg/m3, 0 no I/O)
+  1inf   'infio ' = intf. depth I/O unit (0 no I/O, <0 label with layer #)
+   00    'wvlio ' = w-velocity  I/O unit (0 no I/O)
+   1uvl  'uvlio ' = u-velocity  I/O unit (0 no I/O)
+   1vvl  'vvlio ' = v-velocity  I/O unit (0 no I/O)
+   00    'splio ' = speed       I/O unit (0 no I/O)
+  1tem  'temio ' = temperature I/O unit (0 no I/O)
+  1sal   'salio ' = salinity    I/O unit (0 no I/O)
+  00     'tthio ' = density     I/O unit (0 no I/O)

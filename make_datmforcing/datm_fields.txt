@@ -1,0 +1,43 @@
+# name in file     name in model   expression (computed fields only)
+#
+# Two columns: the sfcf field is copied under its own name. Three columns:
+# the field is computed from sfcf fields with the ncap2 expression (no
+# spaces); g and R may be used (9.80665, 287.05). Write constants with an
+# f suffix (0.28f) so the result stays float.
+#
+# Names ending in _ave are 6-hour bucket averages; they are converted to the
+# mean over each output interval. Any field that is, or is computed from, an
+# _ave field goes in the interval-mean stream (02), timed at the middle of
+# each interval; all others go in the instantaneous stream (01).
+# The first two columns are the "name_in_file name_in_model" pairs written
+# to stream_data_variables in datm.streams.
+#
+# Instantaneous (stream 01)
+pressfc            Sa_pslv
+dlwrf              Faxa_lwdn
+hgt_hyblev1        Sa_z
+spfh_hyblev1       Sa_shum
+tmp_hyblev1        Sa_tbot
+ugrd_hyblev1       Sa_u
+vgrd_hyblev1       Sa_v
+pres_hyblev1       Sa_pbot         pressfc*exp(-g*hgt_hyblev1/(R*tmp_hyblev1))
+spfh2m             Sa_q2m
+tmp2m              Sa_t2m
+ugrd10m            Sa_u10m
+vgrd10m            Sa_v10m
+#
+# Interval means (stream 02): the model's own shortwave bands, and precipitation
+vbdsf_ave          Faxa_swvdr
+nbdsf_ave          Faxa_swndr
+vddsf_ave          Faxa_swvdf
+nddsf_ave          Faxa_swndf
+precp              Faxa_rain       prate_ave*(1-cpofp)
+fprecp             Faxa_snow       prate_ave*cpofp
+#
+# Alternative for the shortwave: the instantaneous dswrf split with the fixed
+# factors CDEPS data modes use (these go in stream 01). To use them, comment
+# out the four _ave band lines above and uncomment these.
+#swvdr             Faxa_swvdr      dswrf*0.28f
+#swndr             Faxa_swndr      dswrf*0.31f
+#swvdf             Faxa_swvdf      dswrf*0.24f
+#swndf             Faxa_swndf      dswrf*0.17f

@@ -79,7 +79,7 @@ echo "*** Output will be saved to: ${OUTDIR}"
 # 2. Main Processing Loop
 # ==============================================================================
 # The FIVE variables we want to extract to 3D Z-levels (including interface depth)
-VARS="uvl vvl tem sal inf"
+VARS="uvl vvl tem sal"
 
 for fnam in $VARS; do
     echo "=================================================="
@@ -126,7 +126,7 @@ for fnam in $VARS; do
     echo "Sanity check passed: All input files are present and valid."
 
     # 2.4 Assign Fortran I/O unit numbers AND the required CDFxxx environment variables
-    uvl1=0; vvl1=0; tem1=0; sal1=0; inf1=0
+    uvl1=0; vvl1=0; tem1=0; sal1=0
     case $fnam in
         uvl) 
             uvl1=33; export CDF033="3zuio.nc" ;;
@@ -136,8 +136,6 @@ for fnam in $VARS; do
             tem1=35; export CDF035="3ztio.nc" ;;
         sal) 
             sal1=36; export CDF036="3zsio.nc" ;;
-        inf) 
-            inf1=37; export CDF037="3dhio.nc" ;;
     esac
 
     # 2.5 Generate the specific input parameter file via sed
@@ -146,7 +144,6 @@ for fnam in $VARS; do
     echo "s/1vvl/$vvl1/g" >> change_archv.sed
     echo "s/1tem/$tem1/g" >> change_archv.sed
     echo "s/1sal/$sal1/g" >> change_archv.sed
-    echo "s/1inf/$inf1/g" >> change_archv.sed
 
     sed -f change_archv.sed ${TEMPLATE} > archv2ncdf3z_${fnam}.in
 

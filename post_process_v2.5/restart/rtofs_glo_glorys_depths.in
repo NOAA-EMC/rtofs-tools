@@ -68,7 +68,7 @@ NetCDF
    00    'mltio ' = mix.l.thk.  I/O unit (0 no I/O)
     0.0  'tempml' = temperature jump across mixed-layer (degC,  0 no I/O)
     0.0  'densml' =     density jump across mixed-layer (kg/m3, 0 no I/O)
-  1inf   'infio ' = intf. depth I/O unit (0 no I/O, <0 label with layer #)
+   00    'infio ' = intf. depth I/O unit (0 no I/O, <0 label with layer #)
    00    'wvlio ' = w-velocity  I/O unit (0 no I/O)
    1uvl  'uvlio ' = u-velocity  I/O unit (0 no I/O)
    1vvl  'vvlio ' = v-velocity  I/O unit (0 no I/O)
